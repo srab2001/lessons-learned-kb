@@ -1,3 +1,9 @@
 folder: context/engagement-notes
 last_updated: "2026-08-13"
-files: []
+files:
+  - path: consolidated-lessons-learned-2026-08-13.md
+    as_of_date: "2026-08-13"
+    content_hash: "sha256:538713bd32a4cce74808604783a47628ccbf2498d4f2730da095e068301c77cc"
+    temporal_status: current
+    sensitivity: internal
+    kb_impact: []
