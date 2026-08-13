@@ -21,6 +21,10 @@ A small, high-confidence collection of pages that a delivery team can pull from 
 
 See the badge legend on the [Home](../index.md) page.
 
+## How the app itself works
+
+This page covers using the KB. For how the underlying app is built and deployed — the sign-in flow, the `context/` → `docs/` → wiki-site pipeline, and how sensitivity levels are enforced at build time — see `docs/design.md` and `docs/technical-blueprint.md` in the repo (maintainer-facing, not published here).
+
 ## Contributing improvements to this guide
 
 This KB was bootstrapped from a proposal-capture KB template (`proposal-intelligence-kb`). As real usage patterns emerge, update this guide, `agent/style-guide.md`, and `structure.md` to reflect what's actually working.

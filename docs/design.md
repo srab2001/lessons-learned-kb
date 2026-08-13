@@ -44,3 +44,7 @@ This KB was bootstrapped from `proposal-intelligence-kb`, whose design describes
 - `docs/technical-blueprint.md`, `docs/data-model.md`, `docs/test-plan.md`, and `docs/AGENT-RUNBOOK.md` from the source template were not ported — they described that cross-platform Neon integration and/or contained the original maintainer's local machine paths and personal email. See the PR description for the full list.
 
 If a downstream consumer is built for this KB later, document its sync contract here.
+
+## See also
+
+`docs/technical-blueprint.md` — the request-by-request and pipeline-by-pipeline detail behind the components listed above (auth flow, the context/ → docs/ → wiki/site/ content pipeline, and how the sensitivity-filter build hook enforces the sensitivity levels described here).

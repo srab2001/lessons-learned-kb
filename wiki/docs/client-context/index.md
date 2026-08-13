@@ -1,7 +1,7 @@
 ---
 title: "Client Context"
 lifecycle: active
-sensitivity: internal
+sensitivity: public
 ---
 
 # Client Context

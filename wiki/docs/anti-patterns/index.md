@@ -1,7 +1,7 @@
 ---
 title: "Anti-Patterns"
 lifecycle: active
-sensitivity: internal
+sensitivity: public
 ---
 
 # Anti-Patterns

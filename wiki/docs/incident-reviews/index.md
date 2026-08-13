@@ -1,7 +1,7 @@
 ---
 title: "Incident Reviews"
 lifecycle: active
-sensitivity: internal
+sensitivity: public
 ---
 
 # Incident Reviews
