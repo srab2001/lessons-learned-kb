@@ -66,7 +66,9 @@ docs/_kb-index.yaml catalog entry added/updated
         │
         ▼
 For each NEW docs/ page: wiki/mkdocs.yml nav gets an entry, and
-wiki/docs/<section>/<slug>.md is created as a relative symlink to ../../docs/<section>/<slug>.md
+wiki/docs/<section>/<slug>.md is created as a relative symlink to ../../../docs/<section>/<slug>.md
+(three levels up from wiki/docs/<section>/ to repo root, then into docs/<section>/ --
+a 2-level ../../ is self-referential and was a real bug, fixed in PR #6)
 (single source of truth stays in docs/; the wiki tree never forks a copy)
         │
         ▼
@@ -79,13 +81,15 @@ Push to main touching docs/** or wiki/** → .github/workflows/build-wiki.yml:
 
 `wiki/site/` is a committed build artifact, not a Vercel build step — `vercel.json` sets `framework: null`, `buildCommand: ""`, `outputDirectory: "wiki/site"`, so Vercel just serves whatever the GitHub Action last committed there. This means the wiki is always exactly one CI run behind `main`, and a broken `mkdocs build` blocks the site update but does not take the *previous* deployed site down.
 
-## Build-time sensitivity enforcement
+## Access model: login gate only, no per-page filtering
 
-`wiki/hooks/sensitivity_filter.py` runs on every page during `mkdocs build` and replaces the content of any page whose frontmatter `sensitivity` is not `public` with a generic "Access Restricted" notice — regardless of what `wiki/mkdocs.yml`'s `nav` references. This is explicitly defense-in-depth (see the hook's own docstring): the nav is expected to only ever list public pages, and the hook is what actually enforces that at build time.
+As of 2026-08-13, this KB has exactly one access-control checkpoint: `middleware.js` + the `ALLOWED_KB_EMAILS` allow-list (see "Sign-in" and "Every subsequent request" above). There is no per-page or per-sensitivity filtering beyond that.
 
-**Scope of the rule:** this applies to individual KB content pages (`docs/<section>/<slug>.md` and their `wiki/docs/<section>/<slug>.md` symlinks) — e.g., a specific incident review is `restricted` by default per `structure.md`. It does **not** apply to the seven section *index* pages (`wiki/docs/<section>/index.md`), which are static nav-tree landing text with no client- or incident-specific content and should stay `sensitivity: public` across all seven sections. Three of them (`anti-patterns`, `client-context`, `incident-reviews`) were incorrectly left at `sensitivity: internal` from the initial bootstrap, which made `mkdocs build --strict` flag them and made the live pages show "Access Restricted" instead of their actual (harmless) description text — fixed 2026-08-13. If a future maintainer adds real sensitive detail directly to a section `index.md` instead of a dedicated slug page, flip it back to `internal`/`restricted` at that point, not before.
+`wiki/hooks/sensitivity_filter.py` previously replaced the content of any page whose frontmatter `sensitivity` wasn't `public` with a generic "Access Restricted" notice, for every viewer regardless of login state. That behavior was removed: `CLAUDE.md`'s own sensitivity definitions treat `restricted` content as visible to "KB maintainers," and since `ALLOWED_KB_EMAILS` *is* the maintainer group (it's the only gate on who can reach the wiki at all), blanking internal/restricted content even for allow-listed users was stricter than the KB's own policy called for. The hook file is kept in place as an intentional no-op (see its docstring) so the mechanism can be reintroduced if this KB ever needs tiers *within* the allow-listed group.
 
-`wiki/hooks/lifecycle_banners.py` is the sibling hook — it injects a visible banner for non-`active` lifecycle states (draft/stale/contradicted/archived) so a reader never mistakes a draft or stale page for reviewed content.
+**Practical effect:** every page — section index, retrospective, incident review, anything — renders its real content to anyone who gets past the login gate. `sensitivity` in a page's frontmatter is now purely an editorial/reuse-policy signal (per `CLAUDE.md`: don't cite `restricted` content outside this KB, etc.), not a wiki-rendering control.
+
+`wiki/hooks/lifecycle_banners.py` is the sibling hook — it injects a visible banner for non-`active` lifecycle states (draft/stale/contradicted/archived) so a reader never mistakes a draft or stale page for reviewed content. This one is unaffected by the access-model change above.
 
 ## Deployment topology
 

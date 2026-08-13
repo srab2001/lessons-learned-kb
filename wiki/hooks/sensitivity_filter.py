@@ -1,27 +1,24 @@
-"""MkDocs hook: block restricted/internal pages from the build output.
+"""MkDocs hook: previously blanked restricted/internal pages at build time.
 
-Pages with sensitivity: restricted or internal are excluded entirely.
-This is a defense-in-depth measure — the nav in mkdocs.yml should only
-reference public pages, but this hook prevents accidental exposure.
+As of 2026-08-13, access control for this KB happens entirely at the login
+gate (middleware.js + the ALLOWED_KB_EMAILS allow-list) -- the wiki is never
+publicly reachable, and every allow-listed user is treated as a KB
+maintainer per CLAUDE.md's sensitivity definitions (restricted content is
+"never referenced outside KB maintainers" -- since ALLOWED_KB_EMAILS *is*
+the maintainer group, anyone who can log in at all is meant to see
+internal/restricted pages too, not just public ones).
+
+This hook is intentionally a no-op now. It's kept in place (rather than
+removed from wiki/mkdocs.yml's hooks list) so the per-page blanking
+mechanism is easy to reintroduce if this KB ever needs tiered access
+*within* the allow-listed group -- see agent/journal.md for the reasoning
+behind dropping it.
 """
 
 import logging
 
 log = logging.getLogger("mkdocs.hooks.sensitivity_filter")
 
-ALLOWED = {"public", ""}
-
 
 def on_page_markdown(markdown: str, page, config, files, **kwargs) -> str:
-    sensitivity = str(page.meta.get("sensitivity", "public")).lower()
-    if sensitivity not in ALLOWED:
-        log.warning(
-            "Page %s has sensitivity '%s' — replacing content with access notice.",
-            page.file.src_path,
-            sensitivity,
-        )
-        return (
-            "# Access Restricted\n\n"
-            "This page is not available in the public KB.\n"
-        )
     return markdown
