@@ -1,0 +1,1 @@
+../../../docs/best-practices/frontend-api-integration-hygiene.md

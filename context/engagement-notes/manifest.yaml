@@ -6,4 +6,18 @@ files:
     content_hash: "sha256:538713bd32a4cce74808604783a47628ccbf2498d4f2730da095e068301c77cc"
     temporal_status: current
     sensitivity: internal
-    kb_impact: []
+    kb_impact:
+      - docs/retrospectives/meal-planner-app.md
+      - docs/retrospectives/travel-deal-finder.md
+      - docs/retrospectives/raven-demo.md
+      - docs/anti-patterns/url-param-oauth-state-loss.md
+      - docs/anti-patterns/esm-only-dependency-crash-in-serverless.md
+      - docs/anti-patterns/stale-build-artifact-false-negatives.md
+      - docs/anti-patterns/environment-variable-misconfiguration.md
+      - docs/best-practices/ask-before-acting-on-ambiguous-specs.md
+      - docs/best-practices/phase-level-pull-requests.md
+      - docs/best-practices/design-io-for-testability.md
+      - docs/best-practices/lock-shared-schema-contracts-early.md
+      - docs/best-practices/automated-smoke-tests-in-ci.md
+      - docs/best-practices/database-migration-hygiene.md
+      - docs/best-practices/frontend-api-integration-hygiene.md

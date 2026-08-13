@@ -1,0 +1,1 @@
+../../../docs/anti-patterns/esm-only-dependency-crash-in-serverless.md

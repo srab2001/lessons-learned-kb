@@ -1,0 +1,1 @@
+../../../docs/best-practices/ask-before-acting-on-ambiguous-specs.md

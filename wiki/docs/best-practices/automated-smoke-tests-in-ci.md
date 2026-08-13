@@ -1,0 +1,1 @@
+../../../docs/best-practices/automated-smoke-tests-in-ci.md

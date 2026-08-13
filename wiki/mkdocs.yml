@@ -54,6 +54,9 @@ nav:
   - "Explore Recommendations": explore.md
   - Retrospectives:
     - retrospectives/index.md
+    - "Meal Planner App": retrospectives/meal-planner-app.md
+    - "Travel Deal Finder": retrospectives/travel-deal-finder.md
+    - "Raven Demo": retrospectives/raven-demo.md
   - Recommendations:
     - recommendations/index.md
   - Incident Reviews:
@@ -62,10 +65,21 @@ nav:
     - capability-areas/index.md
   - Best Practices:
     - best-practices/index.md
+    - "Ask Before Acting on Ambiguous Specs": best-practices/ask-before-acting-on-ambiguous-specs.md
+    - "Phase-Level Pull Requests": best-practices/phase-level-pull-requests.md
+    - "Design I/O for Testability": best-practices/design-io-for-testability.md
+    - "Lock Shared Schema Contracts Early": best-practices/lock-shared-schema-contracts-early.md
+    - "Automated Smoke Tests in CI": best-practices/automated-smoke-tests-in-ci.md
+    - "Database Migration Hygiene": best-practices/database-migration-hygiene.md
+    - "Frontend/API Integration Hygiene": best-practices/frontend-api-integration-hygiene.md
   - Client Context:
     - client-context/index.md
   - Anti-Patterns:
     - anti-patterns/index.md
+    - "URL-Param OAuth State Loss": anti-patterns/url-param-oauth-state-loss.md
+    - "ESM-Only Dependency Crash in Serverless": anti-patterns/esm-only-dependency-crash-in-serverless.md
+    - "Stale Build Artifact False Negatives": anti-patterns/stale-build-artifact-false-negatives.md
+    - "Environment Variable Misconfiguration": anti-patterns/environment-variable-misconfiguration.md
   - About:
     - "User Guide": about/user-guide.md
   - Admin:
