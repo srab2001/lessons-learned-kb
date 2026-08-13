@@ -62,7 +62,9 @@ jobs:
                Follow all CLAUDE.md rules: no invented metrics, every claim footnoted, correct sensitivity.
             4. Update wiki nav and symlinks — for any NEW docs/ page created:
                a. Add it to wiki/mkdocs.yml nav under the correct section
-               b. Create a relative symlink: ln -sf ../../docs/<section>/<file>.md wiki/docs/<section>/<file>.md
+               b. Create a relative symlink: ln -sf ../../../docs/<section>/<file>.md wiki/docs/<section>/<file>.md
+                  (three levels up from wiki/docs/<section>/ — wiki/docs/ -> wiki/ -> repo root — then into docs/<section>/;
+                  a 2-level ../../ resolves back to wiki/docs/<section>/ itself and produces a broken self-referential symlink)
             5. Self-review — verify every claim is footnoted, no invented metrics, correct sensitivity, frontmatter complete.
             6. Commit directly to main — stage only: docs/, wiki/docs/, wiki/mkdocs.yml, agent/log.md, agent/journal.md, docs/_kb-index.yaml, context/*/manifest.yaml
                DO NOT stage or commit wiki/site/ — a separate workflow step handles the wiki rebuild after this agent completes.
