@@ -50,6 +50,6 @@ Machine-parseable append-only log. One entry per session.
   pages_updated: 2 (docs/_kb-index.yaml, wiki/mkdocs.yml)
   gaps_noted: 6 (no scope/period/value for any of the 3 retrospectives; ESM-crash and stale-build-artifact anti-patterns have no repo attribution in the source; several small DB/frontend issues left unattributed in the two consolidated best-practices checklists; no independent corroboration for any single-source metric; audience/framing mismatch — personal projects vs. assumed client engagements — surfaced, not resolved; found a broken relative-path convention in .github/workflows/kb-synthesis.yml's documented wiki-symlink command)
   contradictions_found: 0
-  pr: pending
+  pr: 5 (https://github.com/srab2001/lessons-learned-kb/pull/5)
   branch: agent/kb-update-2026-08-13-consolidated-lessons-synthesis
   notes: all 14 pages lifecycle:draft confidence:low sensitivity:internal, per session scope (no reviewer approval this session); split source across retrospectives/anti-patterns/best-practices per pre-worked scope guidance in journal; added wiki symlinks + mkdocs.yml nav entries for all 14 pages using a corrected (3-level) relative path since the workflow-documented 2-level path is self-referential; updated context/engagement-notes/manifest.yaml kb_impact for the processed file
