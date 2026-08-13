@@ -1,0 +1,85 @@
+name: KB Synthesis
+
+on:
+  workflow_dispatch:
+    inputs:
+      folder:
+        description: "Context folder where new file was added"
+        required: true
+        type: string
+      filename:
+        description: "Filename that was imported"
+        required: true
+        type: string
+      triggered_by:
+        description: "What triggered this run"
+        required: false
+        default: "manual"
+        type: string
+
+jobs:
+  synthesize:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config user.name "kb-synthesis-agent[bot]"
+          git config user.email "kb-synthesis-agent[bot]@users.noreply.github.com"
+
+      - name: Run KB synthesis agent
+        uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          mode: agent
+          anthropic_model: claude-opus-4-5
+          direct_prompt: |
+            You are the Lessons Learned KB synthesis agent running in CI mode. A new source file was added and needs to be synthesized into the knowledge base immediately.
+
+            New file: ${{ inputs.folder }}/${{ inputs.filename }}
+            Triggered by: ${{ inputs.triggered_by }}
+            Mode: CI — commit directly to main, no PR required.
+
+            Run the following steps:
+            1. Orient — read CLAUDE.md, agent/journal.md, last 30 lines of agent/log.md
+            2. Scope — read the source file at ${{ inputs.folder }}/${{ inputs.filename }}. If the file does not exist, log the issue to agent/log.md and exit cleanly.
+            3. Synthesize based on folder type:
+               - context/retrospectives/ → create/update docs/retrospectives/<slug>.md
+               - context/recommendations-raw/ → add recommendations to relevant docs/recommendations/<capability>.md
+               - context/incident-reviews-raw/ → create/update docs/incident-reviews/<slug>.md (sensitivity: restricted by default)
+               - context/anti-patterns-raw/ → create/update docs/anti-patterns/<slug>.md (sensitivity: restricted by default)
+               - context/engagement-notes/ → extract recommendations and retrospective detail; add to relevant docs/ pages
+               - context/capability-areas/ → create/update docs/capability-areas/<slug>.md
+               - context/best-practices-raw/ → create/update docs/best-practices/<slug>.md
+               Follow all CLAUDE.md rules: no invented metrics, every claim footnoted, correct sensitivity.
+            4. Update wiki nav and symlinks — for any NEW docs/ page created:
+               a. Add it to wiki/mkdocs.yml nav under the correct section
+               b. Create a relative symlink: ln -sf ../../docs/<section>/<file>.md wiki/docs/<section>/<file>.md
+            5. Self-review — verify every claim is footnoted, no invented metrics, correct sensitivity, frontmatter complete.
+            6. Commit directly to main — stage only: docs/, wiki/docs/, wiki/mkdocs.yml, agent/log.md, agent/journal.md, docs/_kb-index.yaml, context/*/manifest.yaml
+               DO NOT stage or commit wiki/site/ — a separate workflow step handles the wiki rebuild after this agent completes.
+               Commit message: "docs: synthesize ${{ inputs.filename }} via KB Import [ci]"
+            7. Push to main — run: git pull --rebase origin main && git push origin main
+            8. Log — append machine-parseable entry to agent/log.md
+            9. Journal — append reasoning and lessons to agent/journal.md
+
+            Important CI-mode rules:
+            - Commit directly to main. Do NOT create a branch or PR.
+            - Do NOT build or commit wiki/site/. A separate "Trigger Build Wiki" step dispatches the Build Wiki workflow after this agent finishes.
+            - If the source file does not exist, write a note to agent/log.md, commit it, and exit.
+            - Never invent metrics. Never skip gap notes.
+          allowed_tools: "Bash,Read,Write,Edit"
+
+      - name: Trigger Build Wiki
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run build-wiki.yml --repo srab2001/lessons-learned-kb
