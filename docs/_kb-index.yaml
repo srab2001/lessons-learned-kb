@@ -2,4 +2,164 @@
 # The synthesis agent maintains this as pages are created and updated.
 # See structure.md for the schema and section definitions.
 
-pages: []
+pages:
+  - path: docs/retrospectives/meal-planner-app.md
+    title: "Meal Planner App — Project Retrospective"
+    section: retrospectives
+    lifecycle: draft
+    confidence: low
+    sensitivity: internal
+    as_of_date: "2026-08-13"
+    summary: "Root causes of auth/SSO, deployment, and database config drift across meal_planner_app's meal-planner and fitness apps, drawn from a single consolidated engineering notes document."
+    related:
+      - docs/anti-patterns/url-param-oauth-state-loss.md
+      - docs/anti-patterns/environment-variable-misconfiguration.md
+      - docs/best-practices/database-migration-hygiene.md
+      - docs/best-practices/frontend-api-integration-hygiene.md
+
+  - path: docs/retrospectives/travel-deal-finder.md
+    title: "Travel Deal Finder — Project Retrospective"
+    section: retrospectives
+    lifecycle: draft
+    confidence: low
+    sensitivity: internal
+    as_of_date: "2026-08-13"
+    summary: "Process and testability lessons (spec ambiguity handling, PR sizing, injectable I/O, schema locking) from the travel-deal-finder flight-search pipeline."
+    related:
+      - docs/best-practices/ask-before-acting-on-ambiguous-specs.md
+      - docs/best-practices/phase-level-pull-requests.md
+      - docs/best-practices/design-io-for-testability.md
+      - docs/best-practices/lock-shared-schema-contracts-early.md
+
+  - path: docs/retrospectives/raven-demo.md
+    title: "Raven Demo — Project Retrospective"
+    section: retrospectives
+    lifecycle: draft
+    confidence: low
+    sensitivity: internal
+    as_of_date: "2026-08-13"
+    summary: "A single documented lesson on smoke-test cadence; thin page, source names this repository once."
+    related:
+      - docs/best-practices/automated-smoke-tests-in-ci.md
+      - docs/anti-patterns/stale-build-artifact-false-negatives.md
+
+  - path: docs/anti-patterns/url-param-oauth-state-loss.md
+    title: "Anti-Pattern: Passing Transient State as a URL Parameter Through OAuth"
+    section: anti-patterns
+    lifecycle: draft
+    confidence: low
+    sensitivity: internal
+    as_of_date: "2026-08-13"
+    summary: "Failure pattern where OAuth-transiting URL/localStorage state isn't cleared, causing sticky wrong redirects; what to do instead."
+    related:
+      - docs/retrospectives/meal-planner-app.md
+
+  - path: docs/anti-patterns/esm-only-dependency-crash-in-serverless.md
+    title: "Anti-Pattern: ESM-Only Dependency Crashes a Vercel Serverless Function After a Clean Build"
+    section: anti-patterns
+    lifecycle: draft
+    confidence: low
+    sensitivity: internal
+    as_of_date: "2026-08-13"
+    summary: "A 'Ready' build that crashes at request time due to an ESM-only dependency, missing try/catch, and eager DB client init; not attributable to a named repo in the source."
+    related: []
+
+  - path: docs/anti-patterns/stale-build-artifact-false-negatives.md
+    title: "Anti-Pattern: Verifying Against a Stale Build Artifact"
+    section: anti-patterns
+    lifecycle: draft
+    confidence: low
+    sensitivity: internal
+    as_of_date: "2026-08-13"
+    summary: "Debugging against stale dist/ output produces false leads; includes a race-condition example only visible to automated (not manual) verification. Not attributable to a named repo."
+    related:
+      - docs/retrospectives/raven-demo.md
+
+  - path: docs/anti-patterns/environment-variable-misconfiguration.md
+    title: "Anti-Pattern: Unvalidated Environment Variables Misconfigured Between Similar Deployments"
+    section: anti-patterns
+    lifecycle: draft
+    confidence: low
+    sensitivity: internal
+    as_of_date: "2026-08-13"
+    summary: "Wrong target URL and mismatched env var naming across similar deployments, undetected due to no startup validation."
+    related:
+      - docs/retrospectives/meal-planner-app.md
+
+  - path: docs/best-practices/ask-before-acting-on-ambiguous-specs.md
+    title: "Best Practice: Ask Before Acting on an Ambiguous Spec, Then Execute Silently Once Confirmed"
+    section: best-practices
+    lifecycle: draft
+    confidence: low
+    sensitivity: internal
+    as_of_date: "2026-08-13"
+    summary: "Pause on genuine spec forks; execute confirmed workflows silently thereafter."
+    related:
+      - docs/retrospectives/travel-deal-finder.md
+
+  - path: docs/best-practices/phase-level-pull-requests.md
+    title: "Best Practice: Size Pull Requests Around One Coherent Feature Phase"
+    section: best-practices
+    lifecycle: draft
+    confidence: low
+    sensitivity: internal
+    as_of_date: "2026-08-13"
+    summary: "Combine spec-line PRs into phase-level PRs when they touch overlapping code."
+    related:
+      - docs/retrospectives/travel-deal-finder.md
+
+  - path: docs/best-practices/design-io-for-testability.md
+    title: "Best Practice: Design External I/O for Testability and Ship a Mock-First Fallback"
+    section: best-practices
+    lifecycle: draft
+    confidence: low
+    sensitivity: internal
+    as_of_date: "2026-08-13"
+    summary: "Injectable I/O options bags plus deterministic mock fallbacks for external APIs."
+    related:
+      - docs/retrospectives/travel-deal-finder.md
+
+  - path: docs/best-practices/lock-shared-schema-contracts-early.md
+    title: "Best Practice: Lock Shared Config/Schema Contracts Early and Treat Renames as Breaking Changes"
+    section: best-practices
+    lifecycle: draft
+    confidence: low
+    sensitivity: internal
+    as_of_date: "2026-08-13"
+    summary: "Lock shared config schema in one source of truth; treat renames as breaking-change PRs."
+    related:
+      - docs/retrospectives/travel-deal-finder.md
+
+  - path: docs/best-practices/automated-smoke-tests-in-ci.md
+    title: "Best Practice: Run the End-to-End Smoke Test on Every CI Run, Not Only at Release"
+    section: best-practices
+    lifecycle: draft
+    confidence: low
+    sensitivity: internal
+    as_of_date: "2026-08-13"
+    summary: "Run smoke tests every CI run rather than only at release to catch drift early."
+    related:
+      - docs/retrospectives/raven-demo.md
+      - docs/anti-patterns/stale-build-artifact-false-negatives.md
+
+  - path: docs/best-practices/database-migration-hygiene.md
+    title: "Best Practice: Postgres/Prisma Migration Hygiene Checklist"
+    section: best-practices
+    lifecycle: draft
+    confidence: low
+    sensitivity: internal
+    as_of_date: "2026-08-13"
+    summary: "Four small Postgres/Prisma hygiene fixes: empty-array casting, migration state verification, unique-constraint upserts, null-vs-undefined validation."
+    related:
+      - docs/retrospectives/meal-planner-app.md
+
+  - path: docs/best-practices/frontend-api-integration-hygiene.md
+    title: "Best Practice: Frontend/API Integration Hygiene Checklist"
+    section: best-practices
+    lifecycle: draft
+    confidence: low
+    sensitivity: internal
+    as_of_date: "2026-08-13"
+    summary: "Three small frontend/integration fixes: JSX transform imports, template literal syntax, explicit frontend/backend contracts."
+    related:
+      - docs/retrospectives/meal-planner-app.md
