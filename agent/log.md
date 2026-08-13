@@ -24,6 +24,16 @@ Machine-parseable append-only log. One entry per session.
   branch: setup/port-from-proposal-intelligence-kb
   notes: local mkdocs build --strict test caught a sensitivity-field inconsistency on 3 of 7 wiki section index pages (internal vs. public), fixed; wrote a lessons-learned-kb-specific technical-blueprint.md since the source template's version was proposal-tool-specific and not ported; declined to commit a real admin email into .env.example, directed to Vercel env var instead
 
+[2026-08-13] session: access-model-simplification
+  context_files: 0
+  pages_created: 0
+  pages_updated: 0
+  gaps_noted: 0
+  contradictions_found: 0
+  pr: pending
+  branch: agent/kb-update-2026-08-13-drop-sensitivity-filter
+  notes: maintainer decided access control = login gate only (ALLOWED_KB_EMAILS is the maintainer group per CLAUDE.md); disabled wiki/hooks/sensitivity_filter.py's per-page blanking of internal/restricted content; updated README.md/design.md/technical-blueprint.md to match; also fixed a stale doc reference to the already-fixed (PR #6) wiki-symlink path bug; verified via local mkdocs build that a previously-blanked page now renders
+
 [2026-08-13] session: context-ingest
   context_files: 1 (context/engagement-notes/consolidated-lessons-learned-2026-08-13.md)
   pages_created: 0

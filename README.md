@@ -73,8 +73,10 @@ lessons-learned-kb/
 | Level | Meaning | Wiki-published? |
 |---|---|---|
 | `public` | Ready to share broadly inside the org | Yes |
-| `internal` | Internal analysis; not for external sharing | No |
-| `restricted` | Postmortem/incident feedback, sensitive client detail | No |
+| `internal` | Internal analysis; not for external sharing | Yes, to logged-in KB users |
+| `restricted` | Postmortem/incident feedback, sensitive client detail | Yes, to logged-in KB users |
+
+The wiki itself is never publicly reachable — every page requires Google sign-in and membership on the `ALLOWED_KB_EMAILS` allow-list (see `middleware.js`/`api/auth/`). That allow-list *is* the KB maintainer group referenced in `CLAUDE.md`'s sensitivity definitions, so once a user is allowed to log in at all, they see every sensitivity level, not just `public`. There is no further per-page or per-user filtering beyond that single login gate.
 
 ---
 

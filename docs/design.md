@@ -47,4 +47,4 @@ If a downstream consumer is built for this KB later, document its sync contract 
 
 ## See also
 
-`docs/technical-blueprint.md` — the request-by-request and pipeline-by-pipeline detail behind the components listed above (auth flow, the context/ → docs/ → wiki/site/ content pipeline, and how the sensitivity-filter build hook enforces the sensitivity levels described here).
+`docs/technical-blueprint.md` — the request-by-request and pipeline-by-pipeline detail behind the components listed above (auth flow, the context/ → docs/ → wiki/site/ content pipeline, and the current access model: login gate only, no per-page sensitivity filtering).
