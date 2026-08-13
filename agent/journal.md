@@ -73,3 +73,22 @@ Updated `README.md`'s sensitivity table (`Wiki-published?` column was flatly wro
 **Verified, not just asserted:** rebuilt the wiki locally and confirmed a previously-blanked page (`docs/anti-patterns/esm-only-dependency-crash-in-serverless.md`) now renders its real heading instead of "Access Restricted."
 
 **Process note for future sessions:** `wiki/site/` is committed to `main` as of the PR #5 merge (the `build-wiki.yml` run succeeded this time) — it is no longer safe to `rm -rf wiki/site` as a "local test cleanup" the way earlier sessions in this repo did when that directory was untracked. Accidentally deleted it this session, caught it via `git status` showing 60+ unexpected deletions before committing, restored with `git checkout -- wiki/site/`. Check `git status` before assuming a directory is disposable, even if an earlier session in the same repo treated it that way.
+
+## Attribution resolution — raven_demo's own lessons-learned doc — 2026-08-13
+
+Maintainer supplied `raven_demo`'s actual lessons-learned document (`raven_LESSONSLEARNED.md`) — the detailed original that PR #5's consolidated source had summarized without naming a repo for two of its incidents. This directly resolved the two attribution gaps PR #5 explicitly flagged rather than guessed at, plus surfaced one genuinely new lesson (two Vercel projects tracking one repo with separate env vars/production bindings) not previously captured anywhere in this KB.
+
+**Ingested** as `context/anti-patterns-raw/raven-demo-lessons-learned.md` (folder default `sensitivity: restricted` — kept, since this is an honest raw-ingest categorization, not a reviewed judgment).
+
+**Updated four existing pages** rather than creating duplicates:
+- `docs/anti-patterns/esm-only-dependency-crash-in-serverless.md` — attribution resolved (raven_demo), enriched with the specific verification methodology (compiled-output inspection, unit test matrix, production confirmation) and the two-Vercel-projects takeaway.
+- `docs/anti-patterns/stale-build-artifact-false-negatives.md` — attribution resolved; this page had already flagged a *topical* (not confirmed) link to raven_demo's smoke-test lesson — now confirmed to be the same project.
+- `docs/anti-patterns/environment-variable-misconfiguration.md` — added a third, distinct named incident (the two-Vercel-projects case) alongside the two existing `meal_planner_app` incidents.
+- `docs/retrospectives/raven-demo.md` — expanded from one thin lesson to four, no longer described as "correspondingly thin."
+
+**Editorial decisions:**
+- **Sensitivity kept at `internal` on all four pages** despite the new raw source defaulting to `restricted` — per `structure.md`'s documented pattern of promoting abstracted lessons once reviewed, since the actual content is purely technical (no personnel/client/dispute material, only public GitHub links). Stated explicitly in the ESM page rather than silently inherited either way.
+- **Confidence stayed at `low`, not bumped to `medium` despite now having two sources per page.** The consolidated document's own header states it's a summary "Analysis of srab2001's dedicated lessons learned documents" — meaning this new source and the consolidated one share the same underlying origin, not independent corroboration. Recorded this reasoning explicitly in each page's `lifecycle_history` so a future session doesn't assume source_count: 2 implies independent verification.
+- **Caught and fixed my own invented claim before it landed:** first draft of the ESM page asserted the two-Vercel-projects issue was confirmed to be part of *this specific* incident's debugging — the source only lists it as a general takeaway from the same feature effort, without saying it happened during this particular crash's investigation. Corrected before committing; left a note in that bullet distinguishing "general takeaway from the same effort" from "confirmed detail of this incident," rather than silently smoothing over the distinction.
+
+**Verified:** `mkdocs build --strict` clean (footnotes, links, frontmatter all valid); spot-checked rendered output contains the new attribution text.

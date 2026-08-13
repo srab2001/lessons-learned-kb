@@ -1,3 +1,13 @@
 folder: context/anti-patterns-raw
 last_updated: "2026-08-13"
-files: []
+files:
+  - path: raven-demo-lessons-learned.md
+    as_of_date: "2026-08-13"
+    content_hash: "sha256:f6d82abf61d32298448e48d21bded80830d4ce493afe6ed6d32e4d608e318645"
+    temporal_status: current
+    sensitivity: restricted
+    kb_impact:
+      - docs/anti-patterns/esm-only-dependency-crash-in-serverless.md
+      - docs/anti-patterns/stale-build-artifact-false-negatives.md
+      - docs/anti-patterns/environment-variable-misconfiguration.md
+      - docs/retrospectives/raven-demo.md
