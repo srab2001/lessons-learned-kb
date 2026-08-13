@@ -1,0 +1,1 @@
+../../../docs/anti-patterns/environment-variable-misconfiguration.md

@@ -1,0 +1,1 @@
+../../../docs/best-practices/database-migration-hygiene.md
