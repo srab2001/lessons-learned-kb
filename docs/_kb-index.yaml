@@ -38,10 +38,12 @@ pages:
     confidence: low
     sensitivity: internal
     as_of_date: "2026-08-13"
-    summary: "A single documented lesson on smoke-test cadence; thin page, source names this repository once."
+    summary: "Three attributed root-cause incidents (ESM-only dependency crash, stale-build-hidden race condition, two-Vercel-projects env confusion) plus the original smoke-test-cadence lesson, from Google OAuth + admin-approval feature work."
     related:
       - docs/best-practices/automated-smoke-tests-in-ci.md
       - docs/anti-patterns/stale-build-artifact-false-negatives.md
+      - docs/anti-patterns/esm-only-dependency-crash-in-serverless.md
+      - docs/anti-patterns/environment-variable-misconfiguration.md
 
   - path: docs/anti-patterns/url-param-oauth-state-loss.md
     title: "Anti-Pattern: Passing Transient State as a URL Parameter Through OAuth"
@@ -61,8 +63,9 @@ pages:
     confidence: low
     sensitivity: internal
     as_of_date: "2026-08-13"
-    summary: "A 'Ready' build that crashes at request time due to an ESM-only dependency, missing try/catch, and eager DB client init; not attributable to a named repo in the source."
-    related: []
+    summary: "A 'Ready' build that crashes at request time due to an ESM-only dependency, missing try/catch, and eager DB client init. Attributed to raven_demo."
+    related:
+      - docs/retrospectives/raven-demo.md
 
   - path: docs/anti-patterns/stale-build-artifact-false-negatives.md
     title: "Anti-Pattern: Verifying Against a Stale Build Artifact"
@@ -71,7 +74,7 @@ pages:
     confidence: low
     sensitivity: internal
     as_of_date: "2026-08-13"
-    summary: "Debugging against stale dist/ output produces false leads; includes a race-condition example only visible to automated (not manual) verification. Not attributable to a named repo."
+    summary: "Debugging against stale dist/ output produces false leads; includes a race-condition example only visible to automated (not manual) verification. Attributed to raven_demo."
     related:
       - docs/retrospectives/raven-demo.md
 
@@ -82,9 +85,10 @@ pages:
     confidence: low
     sensitivity: internal
     as_of_date: "2026-08-13"
-    summary: "Wrong target URL and mismatched env var naming across similar deployments, undetected due to no startup validation."
+    summary: "Wrong target URL and mismatched env var naming across similar deployments (meal_planner_app), plus a third incident: two Vercel projects tracking one repo with separate env vars (raven_demo)."
     related:
       - docs/retrospectives/meal-planner-app.md
+      - docs/retrospectives/raven-demo.md
 
   - path: docs/best-practices/ask-before-acting-on-ambiguous-specs.md
     title: "Best Practice: Ask Before Acting on an Ambiguous Spec, Then Execute Silently Once Confirmed"

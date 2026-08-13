@@ -63,3 +63,13 @@ Machine-parseable append-only log. One entry per session.
   pr: 5 (https://github.com/srab2001/lessons-learned-kb/pull/5)
   branch: agent/kb-update-2026-08-13-consolidated-lessons-synthesis
   notes: all 14 pages lifecycle:draft confidence:low sensitivity:internal, per session scope (no reviewer approval this session); split source across retrospectives/anti-patterns/best-practices per pre-worked scope guidance in journal; added wiki symlinks + mkdocs.yml nav entries for all 14 pages using a corrected (3-level) relative path since the workflow-documented 2-level path is self-referential; updated context/engagement-notes/manifest.yaml kb_impact for the processed file
+
+[2026-08-13] session: raven-demo-attribution-resolution
+  context_files: 1 (context/anti-patterns-raw/raven-demo-lessons-learned.md)
+  pages_created: 0
+  pages_updated: 4 (docs/anti-patterns/esm-only-dependency-crash-in-serverless.md, docs/anti-patterns/stale-build-artifact-false-negatives.md, docs/anti-patterns/environment-variable-misconfiguration.md, docs/retrospectives/raven-demo.md)
+  gaps_noted: 0 (this session resolved 2 prior gaps rather than adding new ones)
+  contradictions_found: 0
+  pr: pending
+  branch: agent/kb-update-2026-08-13-raven-demo-attribution
+  notes: resolved the 2 attribution gaps PR #5 explicitly left unattributed, using raven_demo's own lessons-learned doc; added a 3rd, new incident (two Vercel projects/one repo/separate env vars) to environment-variable-misconfiguration.md; kept sensitivity internal (promoted from the raw folder's restricted default, justified per structure.md) and confidence low (2 sources share one underlying origin, not independent corroboration) throughout
