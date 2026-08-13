@@ -1,0 +1,64 @@
+name: Build Wiki
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "wiki/docs/**"
+      - "wiki/mkdocs.yml"
+      - "wiki/hooks/**"
+      - "wiki/stylesheets/**"
+      - "wiki/overrides/**"
+      - "wiki/requirements.txt"
+
+concurrency:
+  group: build-wiki
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: wiki/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r wiki/requirements.txt
+
+      - name: Pull latest and build wiki
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main
+          cd wiki && mkdocs build
+
+      - name: Commit and push built site
+        run: |
+          git add wiki/site/
+          git diff --cached --quiet || git commit -m "chore: rebuild wiki site [skip ci]"
+          git pull --rebase origin main
+          git push origin main
+
+      - name: Deploy to Vercel
+        if: success()
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          npm install -g vercel
+          vercel deploy --prod --cwd wiki/site --token $VERCEL_TOKEN \
+            --scope $VERCEL_ORG_ID \
+            --yes

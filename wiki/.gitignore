@@ -1,0 +1,3 @@
+__pycache__/
+# site/ is committed for Vercel static serving — do NOT ignore it
+!site/

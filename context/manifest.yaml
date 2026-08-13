@@ -1,0 +1,18 @@
+# Root context manifest — lists the context/ folders this KB ingests from.
+# Each folder has its own manifest.yaml tracking individual source files.
+
+folders:
+  - path: context/retrospectives
+    sensitivity_default: internal
+  - path: context/recommendations-raw
+    sensitivity_default: internal
+  - path: context/incident-reviews-raw
+    sensitivity_default: restricted
+  - path: context/anti-patterns-raw
+    sensitivity_default: restricted
+  - path: context/engagement-notes
+    sensitivity_default: internal
+  - path: context/capability-areas
+    sensitivity_default: public
+  - path: context/best-practices-raw
+    sensitivity_default: internal

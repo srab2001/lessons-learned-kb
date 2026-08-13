@@ -1,0 +1,29 @@
+/* Lessons Learned KB — Ad Hoc brand colors, modeled on RECORD */
+
+:root {
+  --md-text-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --md-code-font: "SFMono-Regular", "Consolas", "Liberation Mono", monospace;
+
+  /* Ad Hoc brand */
+  --ah-dark-green:   #118762;
+  --ah-medium-green: #31B67B;
+  --ah-light-green:  #cdecdb;
+  --ah-gray-2:       #EDEDED;
+  --ah-gray-5:       #A4A4A4;
+  --ah-gray-8:       #5F5F5F;
+
+  /* Material overrides */
+  --md-primary-fg-color:        #118762;
+  --md-primary-fg-color--light: #31B67B;
+  --md-primary-fg-color--dark:  #0d6b4e;
+  --md-primary-bg-color:        #ffffff;
+  --md-accent-fg-color:         #31B67B;
+  --md-accent-fg-color--transparent: #31B67B1a;
+}
+
+.md-header        { background-color: var(--ah-dark-green); }
+.md-tabs          { background-color: var(--ah-dark-green); }
+.md-footer        { background-color: var(--ah-gray-8); }
+.md-typeset a     { color: var(--ah-dark-green); }
+.md-typeset a:hover { color: var(--ah-medium-green); }
+.md-nav__link--active { color: var(--ah-dark-green) !important; }

@@ -1,0 +1,72 @@
+site_name: "Lessons Learned KB"
+site_url: "https://lessons-learned-kb.vercel.app/"
+site_description: "Ad Hoc's human-governed, AI-curated knowledge base of project lessons learned"
+
+theme:
+  name: material
+  custom_dir: overrides
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.footnote.tooltips
+    - toc.integrate
+  palette:
+    - scheme: default
+      primary: custom
+      accent: custom
+  font: false
+
+plugins:
+  - search
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: date
+      fallback_to_build_date: true
+      enable_parallel_processing: false
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - attr_list
+  - def_list
+  - meta
+  - footnotes
+  - toc:
+      permalink: true
+  - tables
+
+hooks:
+  - hooks/lifecycle_banners.py
+  - hooks/sensitivity_filter.py
+
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+  - Home: index.md
+  - "Start Here": start-here.md
+  - "Explore Recommendations": explore.md
+  - Retrospectives:
+    - retrospectives/index.md
+  - Recommendations:
+    - recommendations/index.md
+  - Incident Reviews:
+    - incident-reviews/index.md
+  - Capability Areas:
+    - capability-areas/index.md
+  - Best Practices:
+    - best-practices/index.md
+  - Client Context:
+    - client-context/index.md
+  - Anti-Patterns:
+    - anti-patterns/index.md
+  - About:
+    - "User Guide": about/user-guide.md
+  - Admin:
+    - "Upload New Materials": admin.md
