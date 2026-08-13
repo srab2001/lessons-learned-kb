@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#access-restricted" class="md-skip">
+        <a href="#anti-pattern-unvalidated-environment-variables-misconfigured-between-similar-deployments" class="md-skip">
           Skip to content
         </a>
       
@@ -1209,6 +1209,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environment Variable Misconfiguration
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1225,6 +1243,69 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-pattern-looks-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the pattern looks like
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#failure-mode-symptom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Failure mode / symptom
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#warning-signs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Warning signs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-to-do-instead" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to do instead
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1441,8 +1522,55 @@
 
 
 
-<h1 id="access-restricted">Access Restricted<a class="headerlink" href="#access-restricted" title="Permanent link">&para;</a></h1>
-<p>This page is not available in the public KB.</p>
+<div class="admonition info">
+<p class="admonition-title">Draft</p>
+<p>This page is a draft and has not been reviewed. Content may be incomplete or unverified.</p>
+</div>
+<div class="admonition abstract">
+<p class="admonition-title">Source &amp; currency</p>
+<p><strong>Data as of:</strong> 2026-08-13
+<strong>Source file:</strong> <code>consolidated-lessons-learned-2026-08-13.md</code>
+<em>(Full paths available in the <a href="https://github.com/srab2001/lessons-learned-kb/tree/main">repo</a>.)</em></p>
+</div>
+<h1 id="anti-pattern-unvalidated-environment-variables-misconfigured-between-similar-deployments">Anti-Pattern: Unvalidated Environment Variables Misconfigured Between Similar Deployments<a class="headerlink" href="#anti-pattern-unvalidated-environment-variables-misconfigured-between-similar-deployments" title="Permanent link">&para;</a></h1>
+<h2 id="what-the-pattern-looks-like">What the pattern looks like<a class="headerlink" href="#what-the-pattern-looks-like" title="Permanent link">&para;</a></h2>
+<p>Two or more deployments/apps/modules use environment variables with visually similar values (e.g., two URLs from the same hosting provider) or inconsistent naming conventions (a module-specific variable name vs. a generic name a shared tool expects), and nothing validates the variable's presence, format, or target at startup — so a misconfiguration is silent until its downstream symptom appears.</p>
+<h2 id="failure-mode-symptom">Failure mode / symptom<a class="headerlink" href="#failure-mode-symptom" title="Permanent link">&para;</a></h2>
+<p><strong>Wrong target URL (<code>meal_planner_app</code>):</strong> the backend's <code>FRONTEND_BASE</code> was set to the fitness app's URL instead of the meal planner's, traced to a copy/paste error during Render setup between two similar-looking Render-hosted URLs. There was no validation of environment variables at startup to catch the mismatch, so it surfaced only as "all OAuth logins redirect to the wrong app."<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<p><strong>Mismatched variable naming (<code>meal_planner_app</code>):</strong> a fitness module used <code>FITNESS_DATABASE_URL</code>, but the Prisma schema was hardcoded to read the generic <code>DATABASE_URL</code>, so <code>npx prisma migrate deploy</code> failed with an authentication error until either the shell environment was set explicitly or the schema was updated to reference the module-specific variable.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></p>
+<p><strong>General absence of startup validation (repository not named in source):</strong> more broadly, the source describes shipping a wrong <code>API_BASE</code> value with API calls failing silently, and frames the general fix as validating required environment variables — presence and format — at application startup rather than discovering a bad value through downstream symptoms.<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup> No repository is named for this specific generalized issue; it is included here as a companion root cause to the two named incidents above, not as a third named incident.</p>
+<h2 id="warning-signs">Warning signs<a class="headerlink" href="#warning-signs" title="Permanent link">&para;</a></h2>
+<ul>
+<li>A deployment "works" for one app/environment but silently misbehaves for a visually similar one (same hosting provider, near-identical URLs).</li>
+<li>A shared tool (e.g., an ORM) expects a specific, generic variable name, while your own module-naming convention uses something more specific — and nothing reconciles the two.</li>
+<li>Errors surface only as a downstream symptom (wrong redirect, failed API call, failed migration) rather than as a clear "missing/invalid config" error at boot.</li>
+</ul>
+<h2 id="what-to-do-instead">What to do instead<a class="headerlink" href="#what-to-do-instead" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Validate required environment variables at startup — check presence, and check format where applicable (e.g., a URL variable should start with <code>https://</code>) — and fail fast with a clear error rather than let a bad value propagate silently.<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup><sup id="fnref2:3"><a class="footnote-ref" href="#fn:3">3</a></sup></li>
+<li>Log environment variable values at startup safely — truncated, not printed in full — so a misconfiguration is visible in deploy logs without exposing secrets.<sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup><sup id="fnref3:3"><a class="footnote-ref" href="#fn:3">3</a></sup></li>
+<li>Use <code>.env.example</code> template files, and document in them which variable is expected to point at which environment/database/app.<sup id="fnref4:1"><a class="footnote-ref" href="#fn:1">1</a></sup></li>
+<li>Prefer explicit, environment-specific variable names in shared tool configuration (e.g., point Prisma's <code>datasource</code> block at <code>env("FITNESS_DATABASE_URL")</code> explicitly) rather than relying on every environment coincidentally exporting the generic name a tool defaults to.<sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup></li>
+<li>When two databases or environments serve different purposes (as in <code>meal_planner_app</code>'s Render vs. Neon split — see <code>docs/retrospectives/meal-planner-app.md</code>), document which one is authoritative for which feature, since the two problems above are variations of the same "which target is this pointing at" root cause.<sup id="fnref5:1"><a class="footnote-ref" href="#fn:1">1</a></sup><sup id="fnref3:2"><a class="footnote-ref" href="#fn:2">2</a></sup></li>
+</ol>
+<blockquote>
+<p><strong>Gap:</strong> No metric is available for how long any of these misconfigurations were live, how they were detected, or how many requests/logins were affected — only root cause and code-level resolution are documented.</p>
+</blockquote>
+<hr />
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Authentication &amp; SSO &gt; Issue: Environment Variable Misconfiguration (FRONTEND_BASE).&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref4:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref5:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Database &amp; Migrations &gt; Issue: Database URL Environment Variable Confusion.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — API &amp; Backend &gt; Issue: No Validation of Environment Variables at Startup.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:3" title="Jump back to footnote 3 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 
 
 

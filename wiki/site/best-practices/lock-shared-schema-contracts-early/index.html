@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#access-restricted" class="md-skip">
+        <a href="#best-practice-lock-shared-configschema-contracts-early-and-treat-renames-as-breaking-changes" class="md-skip">
           Skip to content
         </a>
       
@@ -858,6 +858,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lock Shared Schema Contracts Early
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -874,6 +892,69 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#practice-statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practice statement
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evidence-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence chain
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-it-applies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where it applies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#confidence-and-evidence-caveats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidence and evidence caveats
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1441,8 +1522,38 @@
 
 
 
-<h1 id="access-restricted">Access Restricted<a class="headerlink" href="#access-restricted" title="Permanent link">&para;</a></h1>
-<p>This page is not available in the public KB.</p>
+<div class="admonition info">
+<p class="admonition-title">Draft</p>
+<p>This page is a draft and has not been reviewed. Content may be incomplete or unverified.</p>
+</div>
+<div class="admonition abstract">
+<p class="admonition-title">Source &amp; currency</p>
+<p><strong>Data as of:</strong> 2026-08-13
+<strong>Source file:</strong> <code>consolidated-lessons-learned-2026-08-13.md</code>
+<em>(Full paths available in the <a href="https://github.com/srab2001/lessons-learned-kb/tree/main">repo</a>.)</em></p>
+</div>
+<h1 id="best-practice-lock-shared-configschema-contracts-early-and-treat-renames-as-breaking-changes">Best Practice: Lock Shared Config/Schema Contracts Early and Treat Renames as Breaking Changes<a class="headerlink" href="#best-practice-lock-shared-configschema-contracts-early-and-treat-renames-as-breaking-changes" title="Permanent link">&para;</a></h1>
+<h2 id="practice-statement">Practice statement<a class="headerlink" href="#practice-statement" title="Permanent link">&para;</a></h2>
+<p>Once a shared config or schema field name is used by more than one module, lock its name and shape in a single source of truth, and treat a later rename as a breaking-change pull request rather than a routine edit.</p>
+<h2 id="evidence-chain">Evidence chain<a class="headerlink" href="#evidence-chain" title="Permanent link">&para;</a></h2>
+<p>On <code>travel-deal-finder</code>, a config field was named <code>origins</code> in one project phase, then renamed to <code>departureAirports</code> in a later phase — requiring three modules plus a test file to change as a result.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> The prevention approach recorded in the source: lock the <code>config.json</code> schema in a single source of truth (e.g., a <code>DEFAULT_CONFIG</code> constant in a config manager module) and treat schema changes as breaking-change PRs going forward.</p>
+<p>See <code>docs/retrospectives/travel-deal-finder.md</code> for the full project context.</p>
+<h2 id="where-it-applies">Where it applies<a class="headerlink" href="#where-it-applies" title="Permanent link">&para;</a></h2>
+<p>Any project where a config or data schema is consumed by more than one module or file — the risk and rework cost of an uncoordinated rename scales with the number of consumers.</p>
+<h2 id="confidence-and-evidence-caveats">Confidence and evidence caveats<a class="headerlink" href="#confidence-and-evidence-caveats" title="Permanent link">&para;</a></h2>
+<p><code>confidence: low</code> — single project, single documented instance ("three modules plus a test file"), no independent corroboration and no time or effort metric attached to the rework beyond the count of affected files.</p>
+<blockquote>
+<p><strong>Gap:</strong> No second project in this source corroborates this pattern, and no rework-time metric is available — only the count of files touched.</p>
+</blockquote>
+<hr />
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Process &amp; Workflow &gt; Lesson: Lock Schema Once.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 
 
 

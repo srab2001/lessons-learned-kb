@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#access-restricted" class="md-skip">
+        <a href="#anti-pattern-esm-only-dependency-crashes-a-vercel-serverless-function-after-a-clean-build" class="md-skip">
           Skip to content
         </a>
       
@@ -1153,6 +1153,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ESM-Only Dependency Crash in Serverless
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1169,6 +1187,69 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-pattern-looks-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the pattern looks like
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#failure-mode-symptom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Failure mode / symptom
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#root-cause-categories-to-check-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Root cause categories to check together
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-to-do-instead" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to do instead
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1441,8 +1522,59 @@
 
 
 
-<h1 id="access-restricted">Access Restricted<a class="headerlink" href="#access-restricted" title="Permanent link">&para;</a></h1>
-<p>This page is not available in the public KB.</p>
+<div class="admonition info">
+<p class="admonition-title">Draft</p>
+<p>This page is a draft and has not been reviewed. Content may be incomplete or unverified.</p>
+</div>
+<div class="admonition abstract">
+<p class="admonition-title">Source &amp; currency</p>
+<p><strong>Data as of:</strong> 2026-08-13
+<strong>Source file:</strong> <code>consolidated-lessons-learned-2026-08-13.md</code>
+<em>(Full paths available in the <a href="https://github.com/srab2001/lessons-learned-kb/tree/main">repo</a>.)</em></p>
+</div>
+<h1 id="anti-pattern-esm-only-dependency-crashes-a-vercel-serverless-function-after-a-clean-build">Anti-Pattern: ESM-Only Dependency Crashes a Vercel Serverless Function After a Clean Build<a class="headerlink" href="#anti-pattern-esm-only-dependency-crashes-a-vercel-serverless-function-after-a-clean-build" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Attribution gap:</strong> The source does not name which of the three repositories (<code>meal_planner_app</code>, <code>travel-deal-finder</code>, <code>raven_demo</code>) this incident occurred in — it is documented under general "Deployment &amp; Vercel" and "API &amp; Backend" headings with no project label or contextual naming clue (no fitness/meal-planner URLs, no travel/flight domain terms, no <code>raven_demo</code> reference). It is presented here as a cross-project pattern rather than attributed to a specific project retrospective, per this session's scoping guidance to not guess repo attribution without a stated or contextual basis.</p>
+</blockquote>
+<h2 id="what-the-pattern-looks-like">What the pattern looks like<a class="headerlink" href="#what-the-pattern-looks-like" title="Permanent link">&para;</a></h2>
+<p>A serverless function builds and deploys successfully ("Ready" status in Vercel), but crashes at request time. The build succeeding gives false confidence that the deployed function actually works.</p>
+<h2 id="failure-mode-symptom">Failure mode / symptom<a class="headerlink" href="#failure-mode-symptom" title="Permanent link">&para;</a></h2>
+<p>After shipping Google OAuth, production returned <code>FUNCTION_INVOCATION_FAILED</code> on auth routes, with an error log of <code>Cannot use import statement outside a module</code>.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> Three layered root causes were identified: (1) a database client module (<code>lib/db.ts</code>) threw an error at module-import time when <code>DATABASE_URL</code> was missing; (2) the corresponding API route (<code>/api/auth/google/start</code>) had no <code>try</code>/<code>catch</code> wrapper around that initialization code, so the error was unhandled;<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> and (3) the actual proximate cause — the <code>jose</code> JWT library is ESM-only, and Vercel's Node-function bundler was not reliably propagating the <code>"type": "module"</code> signal from <code>package.json</code> into the runtime context.<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<p><strong>A documented false-fix signal:</strong> adding <code>"type": "module"</code> to <code>package.json</code> appeared to fix the problem — the deploy went out cleanly — but on the next fresh redeploy with no build cache, the identical crash came back. The source calls this out explicitly as a diagnostic heuristic: <em>a "fix" that works once and then reappears means the config change isn't the actual lever.</em><sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<h2 id="root-cause-categories-to-check-together">Root cause categories to check together<a class="headerlink" href="#root-cause-categories-to-check-together" title="Permanent link">&para;</a></h2>
+<p>This incident is really two related root causes compounding each other, documented in two different sections of the source:</p>
+<ul>
+<li>Lazy vs. eager initialization: the database client was constructed at module import time rather than on first use, so any missing configuration threw before the handler even ran.<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></li>
+<li>Missing error handling: the route handler had no <code>try</code>/<code>catch</code> around initialization or request logic, so any thrown error became an unhandled <code>FUNCTION_INVOCATION_FAILED</code> instead of a clean error response.<sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup></li>
+<li>The ESM-only dependency itself, which is bundler-format-sensitive in a way that ordinary CommonJS/ESM interop configuration did not reliably fix.<sup id="fnref4:1"><a class="footnote-ref" href="#fn:1">1</a></sup></li>
+</ul>
+<h2 id="what-to-do-instead">What to do instead<a class="headerlink" href="#what-to-do-instead" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Treat "Ready" build status and "the deployed function actually works at request time" as two separate things to verify — a clean build does not confirm runtime behavior.<sup id="fnref5:1"><a class="footnote-ref" href="#fn:1">1</a></sup></li>
+<li>If an ESM-only dependency is implicated in a bundler-format crash, don't keep tuning module-format config — replace the dependency. In this case, <code>lib/jwt.ts</code> was rewritten to use the Web Crypto API (<code>crypto.subtle</code>) instead of the <code>jose</code> library, which behaves identically under CommonJS, ESM, and Edge Runtime and has zero dependency on bundler module-format handling.<sup id="fnref6:1"><a class="footnote-ref" href="#fn:1">1</a></sup></li>
+<li>Prefer Web APIs available in both Node.js and Edge Runtime (<code>crypto.subtle</code>, <code>fetch</code>, <code>TextEncoder</code>) over Node-specific or ESM-only libraries in functions that might run in either context; avoid <code>node:*</code> imports specifically in code that must also work in Edge Middleware.<sup id="fnref7:1"><a class="footnote-ref" href="#fn:1">1</a></sup></li>
+<li>To verify a suspected module-format issue directly, compile with <code>tsc --outDir &lt;tmp&gt;</code> and inspect the actual emitted JavaScript rather than reasoning about bundler behavior abstractly.<sup id="fnref8:1"><a class="footnote-ref" href="#fn:1">1</a></sup></li>
+<li>Lazy-initialize database (and similar) clients inside the function body, not at module load time, so a missing environment variable fails inside a <code>try</code>/<code>catch</code> rather than at import time.<sup id="fnref2:3"><a class="footnote-ref" href="#fn:3">3</a></sup></li>
+<li>Wrap all API handler bodies in error handling (directly or via a shared helper) so an unexpected throw returns a clean error response instead of an unhandled invocation failure.<sup id="fnref3:2"><a class="footnote-ref" href="#fn:2">2</a></sup></li>
+</ol>
+<blockquote>
+<p><strong>Gap:</strong> No metric is available for how long this was live in production, how many requests failed, or how it was first detected — only the debugging narrative and code-level resolution.</p>
+</blockquote>
+<hr />
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Deployment &amp; Vercel &gt; Issue: ESM-Only Dependency Crashes in Vercel Serverless.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref4:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref5:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref6:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref7:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref8:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — API &amp; Backend &gt; Issue: Missing Try/Catch on API Routes.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — API &amp; Backend &gt; Issue: Lazy Initialization of Database Clients.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 
 
 

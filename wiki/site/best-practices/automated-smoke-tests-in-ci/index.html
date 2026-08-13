@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#access-restricted" class="md-skip">
+        <a href="#best-practice-run-the-end-to-end-smoke-test-on-every-ci-run-not-only-at-release" class="md-skip">
           Skip to content
         </a>
       
@@ -886,6 +886,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automated Smoke Tests in CI
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -902,6 +920,80 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#practice-statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practice statement
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evidence-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence chain
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related pattern
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-it-applies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where it applies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#confidence-and-evidence-caveats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidence and evidence caveats
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1441,8 +1533,40 @@
 
 
 
-<h1 id="access-restricted">Access Restricted<a class="headerlink" href="#access-restricted" title="Permanent link">&para;</a></h1>
-<p>This page is not available in the public KB.</p>
+<div class="admonition info">
+<p class="admonition-title">Draft</p>
+<p>This page is a draft and has not been reviewed. Content may be incomplete or unverified.</p>
+</div>
+<div class="admonition abstract">
+<p class="admonition-title">Source &amp; currency</p>
+<p><strong>Data as of:</strong> 2026-08-13
+<strong>Source file:</strong> <code>consolidated-lessons-learned-2026-08-13.md</code>
+<em>(Full paths available in the <a href="https://github.com/srab2001/lessons-learned-kb/tree/main">repo</a>.)</em></p>
+</div>
+<h1 id="best-practice-run-the-end-to-end-smoke-test-on-every-ci-run-not-only-at-release">Best Practice: Run the End-to-End Smoke Test on Every CI Run, Not Only at Release<a class="headerlink" href="#best-practice-run-the-end-to-end-smoke-test-on-every-ci-run-not-only-at-release" title="Permanent link">&para;</a></h1>
+<h2 id="practice-statement">Practice statement<a class="headerlink" href="#practice-statement" title="Permanent link">&para;</a></h2>
+<p>Run the end-to-end smoke test as part of every CI pipeline run, not only at release time, so drift accumulated across multiple changes is caught early rather than all at once.</p>
+<h2 id="evidence-chain">Evidence chain<a class="headerlink" href="#evidence-chain" title="Permanent link">&para;</a></h2>
+<p>On <code>raven_demo</code>, an end-to-end smoke test was run exactly once, at release time. It passed on the first try. The source notes, as a retrospective/counterfactual judgment rather than a measured outcome from an actual failure, that if the test had failed instead, debugging would have had to span 7 pull requests' worth of changes made since the test was last run.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<p>See <code>docs/retrospectives/raven-demo.md</code> for the full project context.</p>
+<h2 id="related-pattern">Related pattern<a class="headerlink" href="#related-pattern" title="Permanent link">&para;</a></h2>
+<p>This practice is the direct countermeasure to the pattern documented in <code>docs/anti-patterns/stale-build-artifact-false-negatives.md</code> — both concern the same underlying risk (drift or a stale artifact going undetected between infrequent checks), though the source does not connect the two to the same project.</p>
+<h2 id="where-it-applies">Where it applies<a class="headerlink" href="#where-it-applies" title="Permanent link">&para;</a></h2>
+<p>Any project relying on an end-to-end or integration-level smoke test as its primary confidence check before release — the later and less frequent that check runs, the more accumulated change it has to account for if it fails.</p>
+<h2 id="confidence-and-evidence-caveats">Confidence and evidence caveats<a class="headerlink" href="#confidence-and-evidence-caveats" title="Permanent link">&para;</a></h2>
+<p><code>confidence: low</code> — the "7 PRs" figure is the source's own estimate of what debugging <em>would have</em> required had the test failed; it is not a measured outcome from an actual failure, there is no before/after comparison, and the source documents a single project with no corroboration.</p>
+<blockquote>
+<p><strong>Gap:</strong> No actual incident is documented where a late smoke test caused a costly investigation — the practice is supported here by a near-miss/counterfactual judgment only.</p>
+</blockquote>
+<hr />
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Process &amp; Workflow &gt; Lesson: Automated Testing Early Catches Drift.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 
 
 

@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#access-restricted" class="md-skip">
+        <a href="#best-practice-ask-before-acting-on-an-ambiguous-spec-then-execute-silently-once-confirmed" class="md-skip">
           Skip to content
         </a>
       
@@ -774,6 +774,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ask Before Acting on Ambiguous Specs
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -790,6 +808,69 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#practice-statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practice statement
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evidence-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence chain
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-it-applies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where it applies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#confidence-and-evidence-caveats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidence and evidence caveats
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1441,8 +1522,42 @@
 
 
 
-<h1 id="access-restricted">Access Restricted<a class="headerlink" href="#access-restricted" title="Permanent link">&para;</a></h1>
-<p>This page is not available in the public KB.</p>
+<div class="admonition info">
+<p class="admonition-title">Draft</p>
+<p>This page is a draft and has not been reviewed. Content may be incomplete or unverified.</p>
+</div>
+<div class="admonition abstract">
+<p class="admonition-title">Source &amp; currency</p>
+<p><strong>Data as of:</strong> 2026-08-13
+<strong>Source file:</strong> <code>consolidated-lessons-learned-2026-08-13.md</code>
+<em>(Full paths available in the <a href="https://github.com/srab2001/lessons-learned-kb/tree/main">repo</a>.)</em></p>
+</div>
+<h1 id="best-practice-ask-before-acting-on-an-ambiguous-spec-then-execute-silently-once-confirmed">Best Practice: Ask Before Acting on an Ambiguous Spec, Then Execute Silently Once Confirmed<a class="headerlink" href="#best-practice-ask-before-acting-on-an-ambiguous-spec-then-execute-silently-once-confirmed" title="Permanent link">&para;</a></h1>
+<h2 id="practice-statement">Practice statement<a class="headerlink" href="#practice-statement" title="Permanent link">&para;</a></h2>
+<p>When a spec or prompt has a genuine fork in interpretation, pause and ask a clarifying question before proceeding. Once an interpretation or workflow has been explicitly confirmed, execute it repeatedly without re-confirming each similar step.</p>
+<h2 id="evidence-chain">Evidence chain<a class="headerlink" href="#evidence-chain" title="Permanent link">&para;</a></h2>
+<p>On <code>travel-deal-finder</code>, the original plan was one pull request per prompt (12 total). Partway through, a prompt said to "combine before merging" — a genuine fork relative to the original plan. Pausing to ask a clarifying question cost about 30 minutes of reconsidering the PR strategy; the source's own retrospective estimate is that guessing wrong and redoing the resulting work would have cost roughly 3 hours instead.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> This is the source's own estimate of an avoided cost, not an independently measured before/after, and is treated as illustrative rather than a validated benchmark — see the confidence note below.</p>
+<p>The counterpart lesson, from the same project: once the PR workflow was explicitly confirmed (commit → push → CI → squash-merge → repeat), it was executed silently for 6+ iterations without re-confirming each time.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> The pairing of these two lessons is the point — asking is warranted at a genuine fork, not as a default habit for every step once the ambiguity is resolved.</p>
+<p>See <code>docs/retrospectives/travel-deal-finder.md</code> for the full project context.</p>
+<h2 id="where-it-applies">Where it applies<a class="headerlink" href="#where-it-applies" title="Permanent link">&para;</a></h2>
+<p>Multi-step, prompt- or spec-driven development workflows (including AI-pair-programming task lists) where an early wrong assumption compounds across many subsequent, similar steps — the cost of guessing wrong scales with how many remaining steps depend on the guess.</p>
+<h2 id="confidence-and-evidence-caveats">Confidence and evidence caveats<a class="headerlink" href="#confidence-and-evidence-caveats" title="Permanent link">&para;</a></h2>
+<p><code>confidence: low</code> — this is a single project's self-reported estimate of an avoided cost (30 minutes vs. an estimated 3 hours), not a measured, corroborated outcome, and it comes from a single, unreviewed source document. Per this session's scope, the "30 min vs. 3 hours" figure was considered as a possible basis for a <code>docs/recommendations/</code> entry (it is a genuine metric in the source), but was not promoted to one this session — see this session's PR description for the reasoning and the option to revisit in a follow-up session.</p>
+<blockquote>
+<p><strong>Gap:</strong> No corroborating example from a second project is available in this source to raise confidence above <code>low</code>.</p>
+</blockquote>
+<hr />
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Process &amp; Workflow &gt; Lesson: Ask Before Doing on Ambiguous Specs.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Process &amp; Workflow &gt; Lesson: Don't Ask When Spec Is Unambiguous.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 
 
 

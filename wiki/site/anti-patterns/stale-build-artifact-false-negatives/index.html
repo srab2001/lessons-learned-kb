@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#access-restricted" class="md-skip">
+        <a href="#anti-pattern-verifying-against-a-stale-build-artifact" class="md-skip">
           Skip to content
         </a>
       
@@ -1181,6 +1181,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stale Build Artifact False Negatives
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1197,6 +1215,69 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-pattern-looks-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the pattern looks like
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#failure-mode-symptom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Failure mode / symptom
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#warning-signs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Warning signs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-to-do-instead" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to do instead
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1441,8 +1522,53 @@
 
 
 
-<h1 id="access-restricted">Access Restricted<a class="headerlink" href="#access-restricted" title="Permanent link">&para;</a></h1>
-<p>This page is not available in the public KB.</p>
+<div class="admonition info">
+<p class="admonition-title">Draft</p>
+<p>This page is a draft and has not been reviewed. Content may be incomplete or unverified.</p>
+</div>
+<div class="admonition abstract">
+<p class="admonition-title">Source &amp; currency</p>
+<p><strong>Data as of:</strong> 2026-08-13
+<strong>Source file:</strong> <code>consolidated-lessons-learned-2026-08-13.md</code>
+<em>(Full paths available in the <a href="https://github.com/srab2001/lessons-learned-kb/tree/main">repo</a>.)</em></p>
+</div>
+<h1 id="anti-pattern-verifying-against-a-stale-build-artifact">Anti-Pattern: Verifying Against a Stale Build Artifact<a class="headerlink" href="#anti-pattern-verifying-against-a-stale-build-artifact" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Attribution gap:</strong> The source does not name which repository this pattern occurred in — it appears under general "Deployment &amp; Vercel" and "Testing &amp; Code Quality" headings, with no fitness/meal-planner, travel/flight, or <code>raven_demo</code> naming clue. It is presented here as a cross-project pattern rather than attributed to a specific project retrospective, per this session's scoping guidance to not guess repo attribution without a stated or contextual basis. It is topically related to <code>raven_demo</code>'s smoke-test-cadence lesson (see <code>docs/retrospectives/raven-demo.md</code>) in that both concern verification catching drift too late, but the source does not connect them to the same project.</p>
+</blockquote>
+<h2 id="what-the-pattern-looks-like">What the pattern looks like<a class="headerlink" href="#what-the-pattern-looks-like" title="Permanent link">&para;</a></h2>
+<p>A source file is edited, but the compiled/bundled output (e.g., a <code>dist/</code> directory) is not rebuilt before running verification (tests, manual checks, or automated checks). Verification then runs against stale code, and any failure investigation chases the wrong cause.</p>
+<h2 id="failure-mode-symptom">Failure mode / symptom<a class="headerlink" href="#failure-mode-symptom" title="Permanent link">&para;</a></h2>
+<p>Verification kept failing against an outdated <code>dist/</code> output because a source file had been edited after the last <code>npm run build</code>. The source reports that about an hour was spent debugging "bugs" that were actually artifacts of the stale build, before the real cause (an out-of-date compiled file) was identified.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> The same underlying pattern is described a second time under Testing &amp; Code Quality: a Playwright test was failing, manual <code>fetch</code> calls were working, and request logging showed success — all pointing at different candidate causes (routing, mocking, element lookup) — when the actual cause was that the test was exercising stale compiled code.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></p>
+<p><strong>A deeper example, once the stale-build issue itself was fixed:</strong> a second, subtler bug surfaced. A save handler set a success message (<code>'Saved...'</code>), then called a <code>loadContentItems()</code> refresh function; the dropdown-refresh, as a side effect, cleared the success message. The message was visible for about 100ms before being silently overwritten. This was invisible to manual testing (a glance-and-move-on check) but would reliably fail any automated check that waits for the message to persist.<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<h2 id="warning-signs">Warning signs<a class="headerlink" href="#warning-signs" title="Permanent link">&para;</a></h2>
+<ul>
+<li>A check that "should" pass keeps failing for reasons that don't add up across multiple candidate explanations.</li>
+<li>Manual, glance-based verification looks fine, but a more deliberate automated check (one that waits for an expected state) fails.</li>
+<li>Debugging effort is being spent on the failing check's surrounding logic (routing, mocking, data) without first confirming the artifact under test reflects the current source.</li>
+</ul>
+<h2 id="what-to-do-instead">What to do instead<a class="headerlink" href="#what-to-do-instead" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Rebuild before every verification step, as a fixed sequence rather than an occasional afterthought: <code>npm run build</code> then run tests/checks.<sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup><sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup></li>
+<li>When a check that should pass keeps failing for reasons that don't add up, first verify the artifact under test is actually current — only then debug the failure itself.<sup id="fnref3:2"><a class="footnote-ref" href="#fn:2">2</a></sup></li>
+<li>Only clear status/feedback messages on a genuinely user-initiated action; never clear them as a side effect of an unrelated data refresh, since state changes hidden inside side effects are invisible to manual testing but will reliably break automated checks that wait for that state.<sup id="fnref4:1"><a class="footnote-ref" href="#fn:1">1</a></sup></li>
+<li>Treat automated checks that wait for output as a feature, not a nuisance — they catch exactly the class of race-condition/side-effect bug described above immediately, where manual testing would miss it.<sup id="fnref5:1"><a class="footnote-ref" href="#fn:1">1</a></sup></li>
+</ol>
+<blockquote>
+<p><strong>Gap:</strong> No metric is available beyond the self-reported "about an hour" spent debugging the first instance of this pattern — there is no measure of how often this recurred, or of impact before the "always rebuild first" practice was adopted.</p>
+</blockquote>
+<hr />
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Deployment &amp; Vercel &gt; Issue: Build Cache Causing Stale Artifacts (including the "Deep-Dive Example" subsection).&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref4:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref5:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Testing &amp; Code Quality &gt; Issue: Stale Build Causing False Debug Output.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 
 
 

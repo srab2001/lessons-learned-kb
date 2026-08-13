@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#access-restricted" class="md-skip">
+        <a href="#best-practice-postgresprisma-migration-hygiene-checklist" class="md-skip">
           Skip to content
         </a>
       
@@ -914,6 +914,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Migration Hygiene
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -930,6 +948,69 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#practice-statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practice statement
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evidence-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence chain
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-it-applies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where it applies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#confidence-and-evidence-caveats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidence and evidence caveats
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1441,8 +1522,59 @@
 
 
 
-<h1 id="access-restricted">Access Restricted<a class="headerlink" href="#access-restricted" title="Permanent link">&para;</a></h1>
-<p>This page is not available in the public KB.</p>
+<div class="admonition info">
+<p class="admonition-title">Draft</p>
+<p>This page is a draft and has not been reviewed. Content may be incomplete or unverified.</p>
+</div>
+<div class="admonition abstract">
+<p class="admonition-title">Source &amp; currency</p>
+<p><strong>Data as of:</strong> 2026-08-13
+<strong>Source file:</strong> <code>consolidated-lessons-learned-2026-08-13.md</code>
+<em>(Full paths available in the <a href="https://github.com/srab2001/lessons-learned-kb/tree/main">repo</a>.)</em></p>
+</div>
+<h1 id="best-practice-postgresprisma-migration-hygiene-checklist">Best Practice: Postgres/Prisma Migration Hygiene Checklist<a class="headerlink" href="#best-practice-postgresprisma-migration-hygiene-checklist" title="Permanent link">&para;</a></h1>
+<h2 id="practice-statement">Practice statement<a class="headerlink" href="#practice-statement" title="Permanent link">&para;</a></h2>
+<p>Four small, independently verifiable Postgres/Prisma hygiene practices, each grounded in a specific documented failure in the source material. None of these carry a quantified outcome — they are qualitative fixes to concrete bugs, bundled here into one checklist rather than four separate thin pages.</p>
+<h2 id="evidence-chain">Evidence chain<a class="headerlink" href="#evidence-chain" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong>Explicitly cast empty array literals.</strong> A migration failed with <code>ERROR: cannot determine type of empty array</code> on an <code>INSERT</code> into an <code>exercise_definitions</code> table with a <code>secondary_muscles</code> column, because PostgreSQL cannot infer the type of a bare <code>ARRAY[]</code> literal. The fix: cast explicitly, e.g. <code>ARRAY[]::TEXT[]</code>, and a batch fix via <code>sed</code> was used to correct existing migration files.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> Recorded prevention: always cast explicitly, consider <code>NULL</code> instead of an empty array for optional fields, add type-casting checks to migration linting, and test migrations against a copy of production data. <strong>Attribution note:</strong> the <code>exercise_definitions</code>/<code>secondary_muscles</code> naming matches <code>meal_planner_app</code>'s fitness/exercise domain (see <code>docs/retrospectives/meal-planner-app.md</code>), but the source does not explicitly name a repository for this issue — that project tie is inferred, not stated.</p>
+</li>
+<li>
+<p><strong>Verify actual migration state before trusting the tracking table.</strong> <code>prisma migrate deploy</code> reported "No pending migrations" while the target table did not actually exist, because Prisma's <code>_prisma_migrations</code> tracking table had drifted from the real schema (e.g., from a manual SQL change or a mid-execution failure).<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> Recorded fix: apply SQL directly with <code>prisma db execute --file &lt;migration.sql&gt;</code> to bypass tracking when needed, or use <code>prisma db pull</code> to verify the real schema. No repository is named for this issue.</p>
+</li>
+<li>
+<p><strong>Don't rely on <code>ON CONFLICT</code> without a matching unique constraint.</strong> An <code>ON CONFLICT (user_id)</code> clause failed because no unique constraint existed on that column.<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup> Recorded fix: use a check-then-insert/update pattern instead until the constraint is added. No repository is named for this issue.</p>
+</li>
+<li>
+<p><strong>Validate for both <code>null</code> and <code>undefined</code>.</strong> A validation check used <code>value !== undefined</code> only, so a <code>null</code> value passed the check and then failed downstream with a misleading "must be a positive number" error.<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup> Recorded fix: check <code>value !== null &amp;&amp; value !== undefined</code>. No repository is named for this issue.</p>
+</li>
+</ol>
+<h2 id="where-it-applies">Where it applies<a class="headerlink" href="#where-it-applies" title="Permanent link">&para;</a></h2>
+<p>Any Postgres schema using array-typed columns (item 1); any Prisma-managed schema, especially where manual SQL is sometimes applied outside Prisma's migration flow (item 2); any table using <code>ON CONFLICT</code> upserts (item 3); and any input validation logic distinguishing "not provided" from "explicitly empty" (item 4).</p>
+<h2 id="confidence-and-evidence-caveats">Confidence and evidence caveats<a class="headerlink" href="#confidence-and-evidence-caveats" title="Permanent link">&para;</a></h2>
+<p><code>confidence: low</code> for all four items — each is a single, qualitative bug/fix pair with no defect-rate or time-saved metric, and no project attribution beyond the inferred tie noted for item 1.</p>
+<blockquote>
+<p><strong>Gap:</strong> Items 2–4 have no naming or domain clue in the source tying them to any of the three repositories; they are deliberately left unattributed here rather than guessed into a specific project's retrospective page.</p>
+</blockquote>
+<hr />
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Database &amp; Migrations &gt; Issue: Empty Array Type Inference in PostgreSQL.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Database &amp; Migrations &gt; Issue: Migration State Inconsistency.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Database &amp; Migrations &gt; Issue: No Unique Constraint on Subscription User_ID.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:4">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Database &amp; Migrations &gt; Issue: Null Validation Failures.&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 
 
 

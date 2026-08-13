@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#access-restricted" class="md-skip">
+        <a href="#best-practice-frontendapi-integration-hygiene-checklist" class="md-skip">
           Skip to content
         </a>
       
@@ -942,6 +942,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frontend/API Integration Hygiene
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -958,6 +976,69 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#practice-statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practice statement
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evidence-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence chain
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-it-applies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where it applies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#confidence-and-evidence-caveats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidence and evidence caveats
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1441,8 +1522,53 @@
 
 
 
-<h1 id="access-restricted">Access Restricted<a class="headerlink" href="#access-restricted" title="Permanent link">&para;</a></h1>
-<p>This page is not available in the public KB.</p>
+<div class="admonition info">
+<p class="admonition-title">Draft</p>
+<p>This page is a draft and has not been reviewed. Content may be incomplete or unverified.</p>
+</div>
+<div class="admonition abstract">
+<p class="admonition-title">Source &amp; currency</p>
+<p><strong>Data as of:</strong> 2026-08-13
+<strong>Source file:</strong> <code>consolidated-lessons-learned-2026-08-13.md</code>
+<em>(Full paths available in the <a href="https://github.com/srab2001/lessons-learned-kb/tree/main">repo</a>.)</em></p>
+</div>
+<h1 id="best-practice-frontendapi-integration-hygiene-checklist">Best Practice: Frontend/API Integration Hygiene Checklist<a class="headerlink" href="#best-practice-frontendapi-integration-hygiene-checklist" title="Permanent link">&para;</a></h1>
+<h2 id="practice-statement">Practice statement<a class="headerlink" href="#practice-statement" title="Permanent link">&para;</a></h2>
+<p>Three small, independently verifiable frontend and frontend/backend integration hygiene practices, bundled here into one checklist rather than three separate thin pages. None carry a quantified outcome.</p>
+<h2 id="evidence-chain">Evidence chain<a class="headerlink" href="#evidence-chain" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong>Drop the unused <code>import React</code> on React 17+.</strong> React 17+'s new JSX transform no longer requires <code>import React from 'react'</code>, and leaving it in produces an unused-import warning.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> No repository is named for this issue.</p>
+</li>
+<li>
+<p><strong>Use <code>${}</code> interpolation in template literals, not bare <code>{}</code>, inside JSX class-name strings.</strong> A class name written as <code>className="difficulty-{exercise.difficulty_level}"</code> rendered the literal text <code>difficulty-{exercise.difficulty_level}</code> rather than the interpolated value, because template literals require <code>${}</code> syntax.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> <strong>Attribution note:</strong> <code>exercise.difficulty_level</code> matches <code>meal_planner_app</code>'s fitness/exercise domain (see <code>docs/retrospectives/meal-planner-app.md</code>), but the source does not explicitly name a repository for this issue — that project tie is inferred, not stated.</p>
+</li>
+<li>
+<p><strong>Define and validate an explicit request/response contract between frontend and backend built independently.</strong> A frontend sent <code>{answers, user_id, metadata}</code> while the backend expected <code>{messages, interview_answers, userProfile}</code>, because the two sides were developed independently without an agreed contract.<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup> Recorded fix: define the contract explicitly (e.g., a shared TypeScript interface), validate payloads during development (e.g., with Postman/Insomnia), add request-validation middleware on the backend, and add integration tests covering the full request/response cycle. No repository is named for this issue; the example payload's <code>fitness_level</code> field is a weak, inconclusive signal toward the fitness domain and is not used here as a basis for attribution.</p>
+</li>
+</ol>
+<h2 id="where-it-applies">Where it applies<a class="headerlink" href="#where-it-applies" title="Permanent link">&para;</a></h2>
+<p>Item 1 applies to any React 17+ codebase. Item 2 applies to any JSX codebase using dynamic class names. Item 3 applies to any project where frontend and backend are built or iterated on independently, especially without a shared type/schema definition.</p>
+<h2 id="confidence-and-evidence-caveats">Confidence and evidence caveats<a class="headerlink" href="#confidence-and-evidence-caveats" title="Permanent link">&para;</a></h2>
+<p><code>confidence: low</code> for all three items — each is a single, qualitative bug/fix pair with no defect-rate or time-saved metric, and no confirmed project attribution for any of the three.</p>
+<blockquote>
+<p><strong>Gap:</strong> None of the three issues in this page have a confirmed repository attribution in the source; item 2's domain-based inference is noted explicitly above, and items 1 and 3 have no attribution basis at all.</p>
+</blockquote>
+<hr />
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Frontend Development &gt; Issue: React Import Warning (React 17+).&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Frontend Development &gt; Issue: Template Literal Not Evaluated in className.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Frontend Development &gt; Issue: API Payload Mismatch.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 
 
 

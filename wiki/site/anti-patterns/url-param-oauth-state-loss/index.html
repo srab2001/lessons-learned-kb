@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#access-restricted" class="md-skip">
+        <a href="#anti-pattern-passing-transient-state-as-a-url-parameter-through-oauth" class="md-skip">
           Skip to content
         </a>
       
@@ -1125,6 +1125,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    URL-Param OAuth State Loss
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1141,6 +1159,69 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-pattern-looks-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the pattern looks like
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#failure-mode-symptom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Failure mode / symptom
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#warning-signs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Warning signs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-to-do-instead" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to do instead
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1441,8 +1522,55 @@
 
 
 
-<h1 id="access-restricted">Access Restricted<a class="headerlink" href="#access-restricted" title="Permanent link">&para;</a></h1>
-<p>This page is not available in the public KB.</p>
+<div class="admonition info">
+<p class="admonition-title">Draft</p>
+<p>This page is a draft and has not been reviewed. Content may be incomplete or unverified.</p>
+</div>
+<div class="admonition abstract">
+<p class="admonition-title">Source &amp; currency</p>
+<p><strong>Data as of:</strong> 2026-08-13
+<strong>Source file:</strong> <code>consolidated-lessons-learned-2026-08-13.md</code>
+<em>(Full paths available in the <a href="https://github.com/srab2001/lessons-learned-kb/tree/main">repo</a>.)</em></p>
+</div>
+<h1 id="anti-pattern-passing-transient-state-as-a-url-parameter-through-oauth">Anti-Pattern: Passing Transient State as a URL Parameter Through OAuth<a class="headerlink" href="#anti-pattern-passing-transient-state-as-a-url-parameter-through-oauth" title="Permanent link">&para;</a></h1>
+<h2 id="what-the-pattern-looks-like">What the pattern looks like<a class="headerlink" href="#what-the-pattern-looks-like" title="Permanent link">&para;</a></h2>
+<p>A redirect-to-destination or other transient piece of state (e.g., "where should the user land after login?") is passed as a URL query or hash parameter through an OAuth authorization/callback round trip, instead of being stored client-side and cleared before the redirect.</p>
+<h2 id="failure-mode-symptom">Failure mode / symptom<a class="headerlink" href="#failure-mode-symptom" title="Permanent link">&para;</a></h2>
+<p>In <code>meal_planner_app</code>, a <code>?returnTo=fitness</code> URL parameter was included in the OAuth redirect URL. It was not cleared after the OAuth callback completed, so the parameter effectively became sticky: every subsequent login — regardless of what the user actually intended — redirected to the fitness app.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<p><strong>Related pitfall:</strong> moving the state out of the URL and into <code>localStorage</code> does not fully fix this pattern on its own. In the same project, a <code>sso_return_to</code> value written to <code>localStorage</code> was not reliably cleared after being consumed — multiple code paths could set it, and there was no cleanup on error/fallback paths — which reproduced the same symptom (unwanted repeated redirects) through a different mechanism.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></p>
+<p><strong>Related pitfall:</strong> integrating two systems that don't agree on the auth callback format is a distinct but adjacent failure mode. In the same project, a fitness app expected an auth callback hash of <code>#auth=token=xxx&amp;user=xxx</code>, but the backend sent <code>#token=xxx</code> only, with no fallback handling — causing silent auth failures rather than a wrong redirect.<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></p>
+<h2 id="warning-signs">Warning signs<a class="headerlink" href="#warning-signs" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Logins unexpectedly and consistently redirect all users to the same unintended destination.</li>
+<li>Behavior differs between a direct login flow and an SSO/OAuth login flow for what should be equivalent logic.</li>
+<li>A "fix" that clears state at one point in the code doesn't fully resolve the symptom, because another code path (e.g., an error path) can still set or fail to clear the same state.</li>
+</ul>
+<h2 id="what-to-do-instead">What to do instead<a class="headerlink" href="#what-to-do-instead" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Store transient state (e.g., the intended return-to destination) in <code>localStorage</code> <strong>before</strong> the OAuth redirect, not in the URL.</li>
+<li>Clear the URL of any transient state immediately (e.g., <code>window.history.replaceState</code>) so it cannot leak into a later, unrelated navigation.</li>
+<li>Remove the <code>localStorage</code> entry immediately after consuming it — including on error/fallback paths, not just the success path.</li>
+<li>Document the expected callback format(s) for each integrated app, and add explicit fallback handling for any known alternate formats.</li>
+<li>Test both the direct login flow and the SSO login flow explicitly, since they can silently diverge.<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup><sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup><sup id="fnref2:3"><a class="footnote-ref" href="#fn:3">3</a></sup></li>
+</ol>
+<blockquote>
+<p><strong>Gap:</strong> The source does not report how many users or logins were affected, how long the misconfiguration was live, or how it was ultimately detected — only the root cause and code-level resolution. No frequency or impact metric is available, so this page cannot support a <code>docs/recommendations/</code> entry despite being clearly actionable.</p>
+</blockquote>
+<hr />
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Authentication &amp; SSO &gt; URL Parameter Persistence Through OAuth.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Authentication &amp; SSO &gt; State Not Cleared After Use (Stale localStorage).&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Authentication &amp; SSO &gt; URL Hash Format Mismatch Between Systems.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 
 
 

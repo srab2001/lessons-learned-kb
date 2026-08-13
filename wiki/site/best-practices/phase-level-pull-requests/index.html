@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#access-restricted" class="md-skip">
+        <a href="#best-practice-size-pull-requests-around-one-coherent-feature-phase" class="md-skip">
           Skip to content
         </a>
       
@@ -802,6 +802,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase-Level Pull Requests
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -818,6 +836,69 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#practice-statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practice statement
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evidence-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence chain
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-it-applies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where it applies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#confidence-and-evidence-caveats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confidence and evidence caveats
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1441,8 +1522,39 @@
 
 
 
-<h1 id="access-restricted">Access Restricted<a class="headerlink" href="#access-restricted" title="Permanent link">&para;</a></h1>
-<p>This page is not available in the public KB.</p>
+<div class="admonition info">
+<p class="admonition-title">Draft</p>
+<p>This page is a draft and has not been reviewed. Content may be incomplete or unverified.</p>
+</div>
+<div class="admonition abstract">
+<p class="admonition-title">Source &amp; currency</p>
+<p><strong>Data as of:</strong> 2026-08-13
+<strong>Source file:</strong> <code>consolidated-lessons-learned-2026-08-13.md</code>
+<em>(Full paths available in the <a href="https://github.com/srab2001/lessons-learned-kb/tree/main">repo</a>.)</em></p>
+</div>
+<h1 id="best-practice-size-pull-requests-around-one-coherent-feature-phase">Best Practice: Size Pull Requests Around One Coherent Feature Phase<a class="headerlink" href="#best-practice-size-pull-requests-around-one-coherent-feature-phase" title="Permanent link">&para;</a></h1>
+<h2 id="practice-statement">Practice statement<a class="headerlink" href="#practice-statement" title="Permanent link">&para;</a></h2>
+<p>Size pull requests around one coherent feature phase rather than one PR per individual spec line or prompt. Combine prompts that touch overlapping code into a single phase-level PR.</p>
+<h2 id="evidence-chain">Evidence chain<a class="headerlink" href="#evidence-chain" title="Permanent link">&para;</a></h2>
+<p>On <code>travel-deal-finder</code>, the PR strategy changed mid-project from one PR per spec line to one PR per coherent feature phase, reducing the total PR count from a planned 12 to 6.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> Reported benefits: a reviewer sees the "whole feature" in one PR, inter-prompt rebases are eliminated, and the PR description can explain how the pieces fit together. The rule of thumb recorded in the source: the right PR size is "one coherent feature," not "one spec line."</p>
+<p><strong>Attribution note:</strong> this specific lesson block does not repeat the <code>travel-deal-finder</code> name, but its "12 total" → "6 PRs" figures match the plan described in the explicitly-named "Ask Before Doing on Ambiguous Specs" lesson immediately preceding it in the same source section, which does name <code>travel-deal-finder</code>. The attribution here is inferred from that match, not stated outright in this specific block.</p>
+<p>See <code>docs/retrospectives/travel-deal-finder.md</code> for the full project context.</p>
+<h2 id="where-it-applies">Where it applies<a class="headerlink" href="#where-it-applies" title="Permanent link">&para;</a></h2>
+<p>Projects executed as a sequence of scoped prompts or spec items where individual items frequently touch overlapping code — the PR-count reduction and rebase elimination benefit is specific to that overlap condition, not a general claim that fewer, larger PRs are always better.</p>
+<h2 id="confidence-and-evidence-caveats">Confidence and evidence caveats<a class="headerlink" href="#confidence-and-evidence-caveats" title="Permanent link">&para;</a></h2>
+<p><code>confidence: low</code> — single project, self-reported PR-count change (12 → 6), no independent corroboration, and no measure of review-quality or defect-rate impact from the change (only qualitative benefits are reported: "reviewer sees whole feature," "eliminates rebases").</p>
+<blockquote>
+<p><strong>Gap:</strong> No second project in this source corroborates the PR-count benefit, and no defect or review-cycle-time metric is available to strengthen the claim beyond the raw PR count and qualitative benefits reported.</p>
+</blockquote>
+<hr />
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Process &amp; Workflow &gt; Lesson: Phase-Level PRs Over Per-Spec PRs.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 
 
 

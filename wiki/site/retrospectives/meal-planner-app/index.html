@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#access-restricted" class="md-skip">
+        <a href="#meal-planner-app-project-retrospective" class="md-skip">
           Skip to content
         </a>
       
@@ -387,6 +387,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Meal Planner App
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -403,6 +421,119 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-issues-and-root-causes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key issues and root causes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key issues and root causes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authentication-sso-configuration-drift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication / SSO configuration drift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment-configuration-drift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment configuration drift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database-environment-variable-mismatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database / environment variable mismatch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#possibly-related-not-confidently-attributable-to-this-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Possibly related, not confidently attributable to this project
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#root-cause-themes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Root-cause themes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-personnel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key personnel
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1441,8 +1572,102 @@
 
 
 
-<h1 id="access-restricted">Access Restricted<a class="headerlink" href="#access-restricted" title="Permanent link">&para;</a></h1>
-<p>This page is not available in the public KB.</p>
+<div class="admonition info">
+<p class="admonition-title">Draft</p>
+<p>This page is a draft and has not been reviewed. Content may be incomplete or unverified.</p>
+</div>
+<div class="admonition abstract">
+<p class="admonition-title">Source &amp; currency</p>
+<p><strong>Data as of:</strong> 2026-08-13
+<strong>Source file:</strong> <code>consolidated-lessons-learned-2026-08-13.md</code>
+<em>(Full paths available in the <a href="https://github.com/srab2001/lessons-learned-kb/tree/main">repo</a>.)</em></p>
+</div>
+<h1 id="meal-planner-app-project-retrospective">Meal Planner App — Project Retrospective<a class="headerlink" href="#meal-planner-app-project-retrospective" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Framing note:</strong> The source document lists <code>meal_planner_app</code> as one of three repositories it consolidates debugging lessons from, but the document reads as a personal/practice project rather than an Ad Hoc client engagement — there is no client name, contract period, or engagement value anywhere in the source.<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup> This page uses neutral project-retrospective language rather than the client/engagement framing <code>structure.md</code> otherwise assumes. See the PR description for this session for the maintainer-facing flag on this mismatch.</p>
+</blockquote>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p><code>meal_planner_app</code> is a multi-app system (a meal-planning frontend plus an associated "fitness" module/app) with Google/SSO-style authentication, a Vercel-hosted frontend, and a Render-hosted PostgreSQL backend, with a separate Neon database also in play at some point.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> The source document does not name this repository again in body text — the issues below are attributed to it based on contextual identifiers in the source (the <code>meal-planner-gold-one.vercel.app</code> and <code>meal-planner-app-8hnw.vercel.app</code> "fitness app" URLs, the <code>fitness/frontend</code> Vercel root directory, and the <code>FRONTEND_BASE</code> / <code>FITNESS_DATABASE_URL</code> environment variable names), not an explicit in-text repo label.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> Every issue below recurs around cross-app configuration drift: two Vercel-hosted frontends (meal planner and fitness) sharing one backend, and two databases (Render PostgreSQL and Neon) in play at once.</p>
+<blockquote>
+<p><strong>Gap:</strong> No scope, client, delivery period, or approximate value is available in the source material. This page cannot populate the "Project name, client, period, engagement type, approximate scope/value" fields <code>structure.md</code> calls out as part of a minimum viable retrospective page.</p>
+</blockquote>
+<h2 id="key-issues-and-root-causes">Key issues and root causes<a class="headerlink" href="#key-issues-and-root-causes" title="Permanent link">&para;</a></h2>
+<h3 id="authentication-sso-configuration-drift">Authentication / SSO configuration drift<a class="headerlink" href="#authentication-sso-configuration-drift" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>OAuth return-to parameter loss.</strong> A <code>?returnTo=fitness</code> URL parameter was not cleared after the OAuth callback, so every login — not just the one that originally set the parameter — redirected to the fitness app instead of its intended destination.<sup id="fnref2:3"><a class="footnote-ref" href="#fn:3">3</a></sup></li>
+<li><strong>Auth hash format mismatch.</strong> The fitness app expected an auth callback hash of the form <code>#auth=token=xxx&amp;user=xxx</code>, but the backend was sending <code>#token=xxx</code> only, causing silent auth failures with no fallback handling.<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup></li>
+<li><strong><code>FRONTEND_BASE</code> pointed at the wrong app.</strong> A copy/paste error during Render setup — two visually similar Render/Vercel URLs — set the backend's <code>FRONTEND_BASE</code> to the fitness app's URL instead of the meal planner's, so all OAuth logins redirected to the wrong app. There was no startup validation of the variable to catch this.<sup id="fnref2:5"><a class="footnote-ref" href="#fn:5">5</a></sup></li>
+<li><strong>Stale transient state.</strong> A <code>sso_return_to</code> value written to <code>localStorage</code> was not reliably cleared after being consumed (multiple code paths could set it; no cleanup on error paths), causing repeated unwanted redirects on later, unrelated visits.<sup id="fnref2:6"><a class="footnote-ref" href="#fn:6">6</a></sup></li>
+<li><strong>Admin role granted in the wrong database.</strong> A user was given the <code>admin</code> role in a Neon database, but the production backend actually authenticated against a separate Render PostgreSQL instance, so the admin privilege never took effect. The two databases were not clearly documented or separated.<sup id="fnref2:7"><a class="footnote-ref" href="#fn:7">7</a></sup></li>
+</ul>
+<h3 id="deployment-configuration-drift">Deployment configuration drift<a class="headerlink" href="#deployment-configuration-drift" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Vercel Root Directory misconfiguration.</strong> In this monorepo layout, Vercel repeatedly failed to find the <code>fitness/frontend</code> subdirectory, traced to Root Directory settings conflicting with custom build commands and cached configuration from prior deployments.<sup id="fnref2:8"><a class="footnote-ref" href="#fn:8">8</a></sup></li>
+<li><strong>CORS allowlist not updated on redeploy.</strong> The fitness app's new URL was not added to the backend's CORS allowlist after the project was recreated, and the previous URL had been deleted in the process, breaking all API calls from the fitness app.<sup id="fnref2:9"><a class="footnote-ref" href="#fn:9">9</a></sup></li>
+</ul>
+<h3 id="database-environment-variable-mismatch">Database / environment variable mismatch<a class="headerlink" href="#database-environment-variable-mismatch" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>DATABASE_URL</code> vs. a module-specific variable.</strong> The fitness module used <code>FITNESS_DATABASE_URL</code>, but the Prisma schema was hardcoded to read <code>DATABASE_URL</code>, so <code>prisma migrate deploy</code> failed with an authentication error until the schema or the shell environment was reconciled.<sup id="fnref2:10"><a class="footnote-ref" href="#fn:10">10</a></sup></li>
+</ul>
+<h3 id="possibly-related-not-confidently-attributable-to-this-project">Possibly related, not confidently attributable to this project<a class="headerlink" href="#possibly-related-not-confidently-attributable-to-this-project" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Empty-array Postgres cast failure.</strong> A migration failed with "cannot determine type of empty array" on an <code>INSERT</code> into an <code>exercise_definitions</code> table with a <code>secondary_muscles</code> column.<sup id="fnref:11"><a class="footnote-ref" href="#fn:11">11</a></sup> The table/column names match this project's fitness/exercise domain, which is the basis for including it here — but the source text does not explicitly name a repository for this issue, unlike the items above. Treat this attribution as inferred, not stated; see the PR description for this editorial call.</li>
+<li><strong>Template literal not evaluated in a <code>className</code>.</strong> A rendered class name used <code>difficulty-{exercise.difficulty_level}</code> instead of a template literal, so the literal text rendered rather than the interpolated value.<sup id="fnref:12"><a class="footnote-ref" href="#fn:12">12</a></sup> Same caveat: <code>exercise.difficulty_level</code> suggests the fitness/exercise domain, but no repository is named in the source for this issue.</li>
+</ul>
+<blockquote>
+<p><strong>Gap:</strong> Several other issues in the source (migration-tracking-state inconsistency, a missing unique constraint on a <code>subscriptions.user_id</code> column, a <code>null</code>-vs-<code>undefined</code> validation bug, a frontend/backend API payload mismatch, a React 17+ unused-import warning) have no domain or naming clue tying them to this project specifically, and are not included here. They are captured without project attribution in <code>docs/best-practices/database-migration-hygiene.md</code> and <code>docs/best-practices/frontend-api-integration-hygiene.md</code> instead of being guessed into this page.</p>
+</blockquote>
+<h2 id="root-cause-themes">Root-cause themes<a class="headerlink" href="#root-cause-themes" title="Permanent link">&para;</a></h2>
+<p>Across the attributable issues, three recurring root causes stand out: (1) two parallel frontends (meal planner, fitness) and two databases (Render, Neon) were not clearly documented as to which served which purpose, so configuration was copy/pasted or set against the wrong target repeatedly;<sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup><sup id="fnref:7"><a class="footnote-ref" href="#fn:7">7</a></sup><sup id="fnref:10"><a class="footnote-ref" href="#fn:10">10</a></sup> (2) transient auth state (URL params, <code>localStorage</code>) was set without a reliable, error-path-inclusive clearing step;<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup><sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup> and (3) Vercel/CORS configuration was not re-verified as a checklist item after redeploys or project recreation.<sup id="fnref:8"><a class="footnote-ref" href="#fn:8">8</a></sup><sup id="fnref:9"><a class="footnote-ref" href="#fn:9">9</a></sup></p>
+<blockquote>
+<p><strong>Gap:</strong> No outcome metrics (defect counts, time-to-resolution, downtime) are available for any of these issues — the source documents root cause and resolution, not measured impact. Confidence is capped at <code>low</code> accordingly.</p>
+</blockquote>
+<h2 id="key-personnel">Key personnel<a class="headerlink" href="#key-personnel" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Gap:</strong> No individuals are named or citable in the source material for this project.</p>
+</blockquote>
+<hr />
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — document header ("Repositories Analyzed").&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Authentication &amp; SSO &gt; Admin Role in Wrong Database; Deployment &amp; Vercel &gt; Vercel Root Directory Misconfiguration; Deployment &amp; Vercel &gt; CORS Configuration.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Authentication &amp; SSO &gt; URL Parameter Persistence Through OAuth.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:4">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Authentication &amp; SSO &gt; URL Hash Format Mismatch Between Systems.&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn:5">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Authentication &amp; SSO &gt; Environment Variable Misconfiguration (FRONTEND_BASE).&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+<li id="fn:6">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Authentication &amp; SSO &gt; State Not Cleared After Use (Stale localStorage).&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+</li>
+<li id="fn:7">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Authentication &amp; SSO &gt; Admin Role in Wrong Database.&#160;<a class="footnote-backref" href="#fnref:7" title="Jump back to footnote 7 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:7" title="Jump back to footnote 7 in the text">&#8617;</a></p>
+</li>
+<li id="fn:8">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Deployment &amp; Vercel &gt; Vercel Root Directory Misconfiguration.&#160;<a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 8 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:8" title="Jump back to footnote 8 in the text">&#8617;</a></p>
+</li>
+<li id="fn:9">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Deployment &amp; Vercel &gt; CORS Configuration.&#160;<a class="footnote-backref" href="#fnref:9" title="Jump back to footnote 9 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:9" title="Jump back to footnote 9 in the text">&#8617;</a></p>
+</li>
+<li id="fn:10">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Database &amp; Migrations &gt; Database URL Environment Variable Confusion.&#160;<a class="footnote-backref" href="#fnref:10" title="Jump back to footnote 10 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:10" title="Jump back to footnote 10 in the text">&#8617;</a></p>
+</li>
+<li id="fn:11">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Database &amp; Migrations &gt; Empty Array Type Inference in PostgreSQL.&#160;<a class="footnote-backref" href="#fnref:11" title="Jump back to footnote 11 in the text">&#8617;</a></p>
+</li>
+<li id="fn:12">
+<p>context/engagement-notes/consolidated-lessons-learned-2026-08-13.md — Frontend Development &gt; Template Literal Not Evaluated in className.&#160;<a class="footnote-backref" href="#fnref:12" title="Jump back to footnote 12 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 
 
 
