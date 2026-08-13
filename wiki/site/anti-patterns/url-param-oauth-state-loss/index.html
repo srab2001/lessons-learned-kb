@@ -10,31 +10,31 @@
       
       
       
-        <link rel="canonical" href="https://lessons-learned-kb.vercel.app/retrospectives/">
+        <link rel="canonical" href="https://lessons-learned-kb.vercel.app/anti-patterns/url-param-oauth-state-loss/">
       
       
-        <link rel="prev" href="../explore/">
+        <link rel="prev" href="../">
       
       
-        <link rel="next" href="meal-planner-app/">
+        <link rel="next" href="../esm-only-dependency-crash-in-serverless/">
       
       
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Retrospectives - Lessons Learned KB</title>
+        <title>Anti-Pattern: Passing Transient State as a URL Parameter Through OAuth - Lessons Learned KB</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -47,9 +47,9 @@
       
     
     
-      <link rel="stylesheet" href="../stylesheets/extra.css">
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#retrospectives" class="md-skip">
+        <a href="#access-restricted" class="md-skip">
           Skip to content
         </a>
       
@@ -90,7 +90,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="Lessons Learned KB" class="md-header__button md-logo" aria-label="Lessons Learned KB" data-md-component="logo">
+    <a href="../.." title="Lessons Learned KB" class="md-header__button md-logo" aria-label="Lessons Learned KB" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Retrospectives
+              Anti-Pattern: Passing Transient State as a URL Parameter Through OAuth
             
           </span>
         </div>
@@ -204,7 +204,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="Lessons Learned KB" class="md-nav__button md-logo" aria-label="Lessons Learned KB" data-md-component="logo">
+    <a href="../.." title="Lessons Learned KB" class="md-nav__button md-logo" aria-label="Lessons Learned KB" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -222,7 +222,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -249,7 +249,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../start-here/" class="md-nav__link">
+      <a href="../../start-here/" class="md-nav__link">
         
   
   
@@ -276,7 +276,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../explore/" class="md-nav__link">
+      <a href="../../explore/" class="md-nav__link">
         
   
   
@@ -300,8 +300,6 @@
       
   
   
-    
-  
   
   
     
@@ -326,15 +324,17 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="./" class="md-nav__link md-nav__link--active">
+            <a href="../../retrospectives/" class="md-nav__link ">
               
   
   
@@ -352,13 +352,13 @@
             </a>
             
               
-              <label class="md-nav__link md-nav__link--active" for="__nav_4" id="__nav_4_label" tabindex="">
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -378,7 +378,7 @@
   
   
     <li class="md-nav__item">
-      <a href="meal-planner-app/" class="md-nav__link">
+      <a href="../../retrospectives/meal-planner-app/" class="md-nav__link">
         
   
   
@@ -406,7 +406,7 @@
   
   
     <li class="md-nav__item">
-      <a href="travel-deal-finder/" class="md-nav__link">
+      <a href="../../retrospectives/travel-deal-finder/" class="md-nav__link">
         
   
   
@@ -434,7 +434,7 @@
   
   
     <li class="md-nav__item">
-      <a href="raven-demo/" class="md-nav__link">
+      <a href="../../retrospectives/raven-demo/" class="md-nav__link">
         
   
   
@@ -494,7 +494,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../recommendations/" class="md-nav__link ">
+            <a href="../../recommendations/" class="md-nav__link ">
               
   
   
@@ -565,7 +565,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../incident-reviews/" class="md-nav__link ">
+            <a href="../../incident-reviews/" class="md-nav__link ">
               
   
   
@@ -636,7 +636,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../capability-areas/" class="md-nav__link ">
+            <a href="../../capability-areas/" class="md-nav__link ">
               
   
   
@@ -721,7 +721,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../best-practices/" class="md-nav__link ">
+            <a href="../../best-practices/" class="md-nav__link ">
               
   
   
@@ -765,7 +765,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../best-practices/ask-before-acting-on-ambiguous-specs/" class="md-nav__link">
+      <a href="../../best-practices/ask-before-acting-on-ambiguous-specs/" class="md-nav__link">
         
   
   
@@ -793,7 +793,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../best-practices/phase-level-pull-requests/" class="md-nav__link">
+      <a href="../../best-practices/phase-level-pull-requests/" class="md-nav__link">
         
   
   
@@ -821,7 +821,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../best-practices/design-io-for-testability/" class="md-nav__link">
+      <a href="../../best-practices/design-io-for-testability/" class="md-nav__link">
         
   
   
@@ -849,7 +849,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../best-practices/lock-shared-schema-contracts-early/" class="md-nav__link">
+      <a href="../../best-practices/lock-shared-schema-contracts-early/" class="md-nav__link">
         
   
   
@@ -877,7 +877,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../best-practices/automated-smoke-tests-in-ci/" class="md-nav__link">
+      <a href="../../best-practices/automated-smoke-tests-in-ci/" class="md-nav__link">
         
   
   
@@ -905,7 +905,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../best-practices/database-migration-hygiene/" class="md-nav__link">
+      <a href="../../best-practices/database-migration-hygiene/" class="md-nav__link">
         
   
   
@@ -933,7 +933,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../best-practices/frontend-api-integration-hygiene/" class="md-nav__link">
+      <a href="../../best-practices/frontend-api-integration-hygiene/" class="md-nav__link">
         
   
   
@@ -993,7 +993,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../client-context/" class="md-nav__link ">
+            <a href="../../client-context/" class="md-nav__link ">
               
   
   
@@ -1036,6 +1036,8 @@
       
   
   
+    
+  
   
   
     
@@ -1062,17 +1064,15 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" checked>
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../anti-patterns/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   
@@ -1096,7 +1096,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_10">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1113,10 +1113,19 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../anti-patterns/url-param-oauth-state-loss/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1132,6 +1141,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -1144,7 +1154,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../anti-patterns/esm-only-dependency-crash-in-serverless/" class="md-nav__link">
+      <a href="../esm-only-dependency-crash-in-serverless/" class="md-nav__link">
         
   
   
@@ -1172,7 +1182,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../anti-patterns/stale-build-artifact-false-negatives/" class="md-nav__link">
+      <a href="../stale-build-artifact-false-negatives/" class="md-nav__link">
         
   
   
@@ -1200,7 +1210,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../anti-patterns/environment-variable-misconfiguration/" class="md-nav__link">
+      <a href="../environment-variable-misconfiguration/" class="md-nav__link">
         
   
   
@@ -1293,7 +1303,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../about/user-guide/" class="md-nav__link">
+      <a href="../../about/user-guide/" class="md-nav__link">
         
   
   
@@ -1386,7 +1396,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../admin/" class="md-nav__link">
+      <a href="../../admin/" class="md-nav__link">
         
   
   
@@ -1431,9 +1441,8 @@
 
 
 
-<h1 id="retrospectives">Retrospectives<a class="headerlink" href="#retrospectives" title="Permanent link">&para;</a></h1>
-<p>One page per project or engagement — scope, outcomes, metrics, and root causes of what went well or poorly.</p>
-<p>No pages yet. See the <a href="../about/user-guide/">User Guide</a> for how to add the first one.</p>
+<h1 id="access-restricted">Access Restricted<a class="headerlink" href="#access-restricted" title="Permanent link">&para;</a></h1>
+<p>This page is not available in the public KB.</p>
 
 
 
@@ -1456,7 +1465,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 13, 2026 14:22:18 UTC">August 13, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 13, 2026 16:17:49 UTC">August 13, 2026</span>
   </span>
 
     
@@ -1466,7 +1475,7 @@
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 13, 2026 14:22:18 UTC">August 13, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 13, 2026 16:17:49 UTC">August 13, 2026</span>
   </span>
 
     
@@ -1523,10 +1532,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "content.tabs.link", "content.footnote.tooltips", "toc.integrate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "content.tabs.link", "content.footnote.tooltips", "toc.integrate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

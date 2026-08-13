@@ -25,7 +25,51 @@
          <lastmod>2026-08-13</lastmod>
     </url>
     <url>
+         <loc>https://lessons-learned-kb.vercel.app/anti-patterns/environment-variable-misconfiguration/</loc>
+         <lastmod>2026-08-13</lastmod>
+    </url>
+    <url>
+         <loc>https://lessons-learned-kb.vercel.app/anti-patterns/esm-only-dependency-crash-in-serverless/</loc>
+         <lastmod>2026-08-13</lastmod>
+    </url>
+    <url>
+         <loc>https://lessons-learned-kb.vercel.app/anti-patterns/stale-build-artifact-false-negatives/</loc>
+         <lastmod>2026-08-13</lastmod>
+    </url>
+    <url>
+         <loc>https://lessons-learned-kb.vercel.app/anti-patterns/url-param-oauth-state-loss/</loc>
+         <lastmod>2026-08-13</lastmod>
+    </url>
+    <url>
          <loc>https://lessons-learned-kb.vercel.app/best-practices/</loc>
+         <lastmod>2026-08-13</lastmod>
+    </url>
+    <url>
+         <loc>https://lessons-learned-kb.vercel.app/best-practices/ask-before-acting-on-ambiguous-specs/</loc>
+         <lastmod>2026-08-13</lastmod>
+    </url>
+    <url>
+         <loc>https://lessons-learned-kb.vercel.app/best-practices/automated-smoke-tests-in-ci/</loc>
+         <lastmod>2026-08-13</lastmod>
+    </url>
+    <url>
+         <loc>https://lessons-learned-kb.vercel.app/best-practices/database-migration-hygiene/</loc>
+         <lastmod>2026-08-13</lastmod>
+    </url>
+    <url>
+         <loc>https://lessons-learned-kb.vercel.app/best-practices/design-io-for-testability/</loc>
+         <lastmod>2026-08-13</lastmod>
+    </url>
+    <url>
+         <loc>https://lessons-learned-kb.vercel.app/best-practices/frontend-api-integration-hygiene/</loc>
+         <lastmod>2026-08-13</lastmod>
+    </url>
+    <url>
+         <loc>https://lessons-learned-kb.vercel.app/best-practices/lock-shared-schema-contracts-early/</loc>
+         <lastmod>2026-08-13</lastmod>
+    </url>
+    <url>
+         <loc>https://lessons-learned-kb.vercel.app/best-practices/phase-level-pull-requests/</loc>
          <lastmod>2026-08-13</lastmod>
     </url>
     <url>
@@ -46,6 +90,18 @@
     </url>
     <url>
          <loc>https://lessons-learned-kb.vercel.app/retrospectives/</loc>
+         <lastmod>2026-08-13</lastmod>
+    </url>
+    <url>
+         <loc>https://lessons-learned-kb.vercel.app/retrospectives/meal-planner-app/</loc>
+         <lastmod>2026-08-13</lastmod>
+    </url>
+    <url>
+         <loc>https://lessons-learned-kb.vercel.app/retrospectives/raven-demo/</loc>
+         <lastmod>2026-08-13</lastmod>
+    </url>
+    <url>
+         <loc>https://lessons-learned-kb.vercel.app/retrospectives/travel-deal-finder/</loc>
          <lastmod>2026-08-13</lastmod>
     </url>
 </urlset>
