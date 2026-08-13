@@ -33,3 +33,13 @@ Machine-parseable append-only log. One entry per session.
   pr: pending
   branch: agent/kb-update-2026-08-13-ingest-consolidated-lessons
   notes: context ingest only, no synthesis performed this session; see journal for full scope notes for the follow-up synthesis session
+
+[2026-08-13] session: tooling-repo-to-context
+  context_files: 0
+  pages_created: 0
+  pages_updated: 0
+  gaps_noted: 1 (could not test against a real GitHub repo from this session's restricted network egress; offline unit/integration tests only)
+  contradictions_found: 0
+  pr: pending
+  branch: agent/kb-update-2026-08-13-repo-to-context-tool
+  notes: added scripts/repo_to_context.py + scripts/requirements.txt; stages context/ raw material from an external repo's existing lessons-learned docs or, as a fallback, a labeled repo-activity digest; never writes docs/ pages or sets active/high-confidence, per CLAUDE.md
